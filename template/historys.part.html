@@ -1,0 +1,36 @@
+<div class="ui top right pointing dropdown transition hidden" id="histoy_dropdown">
+  <div class="text">Recent notes</div>
+  <i class="dropdown icon"></i>
+  <div class="icon menu">
+  </div>
+</div>
+
+<script>
+function remove_historys(index)
+{
+  var room_history = access_cookies('history');
+  if (!room_history) room_history = [];
+  if (index > -1)
+      room_history.splice(index, 1);
+  access_cookies('history',room_history);
+  display_historys();
+}
+function display_historys()
+{
+  var room_history = access_cookies('history');
+  var menu = $('#histoy_dropdown .menu').empty();
+  var name_position = 2 + ('{{root}}'.match(new RegExp("/", "g")) || []).length;
+  if (room_history)
+  {
+      $.each(room_history,function(i,e){
+          menu.append('<div class="item"><span class="description" onclick="remove_historys('+i+')">'
+                      +'<i class="remove icon"></i></span><span href="'+e+'">'+format_history(e,{{len(root)}})
+                      +'</span></div>');
+      });
+      $('#histoy_dropdown').removeClass('transition hidden').dropdown();
+  }
+}
+$(function(){
+  display_historys();
+});
+</script>

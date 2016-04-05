@@ -1,0 +1,17 @@
+{% extends base.html %}
+
+{% block title %}{{error_code}}{% end %}
+
+{% block content %}
+<div class="ui main container" style="margin-top: 3em;">
+  <h1 class="ui header">
+    {{error_code}}
+    <div class="sub header">
+    {{error_display}}
+    </div>
+  </h1>
+  <a style="font-size:1.2em" href="{{root}}/">
+    <i class="icon right angle"></i> Back
+  </a>
+</div>
+{% end %}
