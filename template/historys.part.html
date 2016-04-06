@@ -24,8 +24,8 @@ function display_historys()
   {
       $.each(room_history,function(i,e){
           menu.append('<div class="item"><span class="description" onclick="remove_historys('+i+')">'
-                      +'<i class="remove icon"></i></span><span href="'+e+'">'+format_history(e,{{len(root)}})
-                      +'</span></div>');
+                      +'<i class="remove icon"></i></span><a href="'+e+'">'+format_history(e,{{len(root)}})
+                      +'</a></div>');
       });
       $('#histoy_dropdown').removeClass('transition hidden').dropdown();
   }
