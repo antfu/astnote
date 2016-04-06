@@ -40,14 +40,12 @@
         </a>
         <div onclick="$('.ui.sidebar').sidebar('toggle');" class="unit highlight" style="cursor:pointer;">
           <i class="users icon"></i>
-          Online Editors
+          Collaboration
         </div>
-        <div class="unit">
-          Mode: <span id="mode_display" class="highlight"></span>
+        <div class="unit" id="mode_display">
         </div>
         {% if mode == 'c' %}
         <div class="unit">
-          Syntax:
           <div class="ui top left pointing dropdown highlight">
             <div class="text">Syntax</div>
             <div class="menu" id="syntax_menu">
@@ -91,9 +89,7 @@
             </div>
           </div>
         </div>
-        <div class="unit">
-          Warp:
-          <span id="text_warp_toggle" class="highlight" onclick="warpmode.toggle()"></span>
+        <div class="unit" id="text_warp_toggle" style="cursor:pointer;" onclick="warpmode.toggle()">
         </div>
         {% end %}
         <!--<div class="unit" onclick="$('#url_share_input').select();">
@@ -161,7 +157,7 @@
       {
         warpmode.warp = value;
         session.setUseWrapMode(warpmode.warp);
-        $('#text_warp_toggle').text(warpmode.warp?'True':'False');
+        $('#text_warp_toggle').text(warpmode.warp?'Warp:On':'Warp:Off');
       }
       return warpmode.warp;
     }
@@ -170,6 +166,9 @@
     }
   </script>
   <script>
+    $('.ui.dropdown').dropdown();
+    $('#syntax_menu .item').on('click',function(){set_syntax($(this).attr('syntax'))});
+    $('#theme_menu .item').on('click',function(){set_theme($(this).attr('theme'))});
     $(window).on('hashchange', function() {
       load_syntax();
     });
@@ -253,9 +252,5 @@
     room_history.push(room_url);
     access_cookies('history',room_history);
     access_cookies('prev',room_url);
-
-    $('.ui.dropdown').dropdown();
-    $('#syntax_menu .item').on('click',function(){set_syntax($(this).attr('syntax'))});
-    $('#theme_menu .item').on('click',function(){set_theme($(this).attr('theme'))});
   </script>
 {% end %}
