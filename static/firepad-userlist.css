@@ -85,7 +85,7 @@ input.firepad-userlist-name-input {
 
 .menu.bar .unit
 {
-  display:inline-block !important;
+  display:inline-block;
   margin:0.5em 0 0 1em !important;
   color:#9c9c9c;
 }
@@ -129,8 +129,4 @@ input.firepad-userlist-name-input {
 .firepad-c-yellow
 {
     color: #FFF435 !important;
-}
-.ui.visible.left.sidebar ~ .fixed, .ui.visible.left.sidebar ~ .pusher {
-    -webkit-transform: translate3d(15em, 0, 0);
-    transform: translate3d(15em, 0, 0);
 }

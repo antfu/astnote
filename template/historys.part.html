@@ -1,5 +1,5 @@
-<div class="ui top right pointing dropdown transition hidden" id="histoy_dropdown">
-  <div class="text">Recent notes</div>
+<div class="ui dropdown transition hidden" id="histoy_dropdown">
+  <div class="text">Recent</div>
   <i class="dropdown icon"></i>
   <div class="icon menu">
   </div>
@@ -19,15 +19,19 @@ function display_historys()
 {
   var room_history = access_cookies('history');
   var menu = $('#histoy_dropdown .menu').empty();
-  var name_position = 2 + ('{{root}}'.match(new RegExp("/", "g")) || []).length;
   if (room_history)
   {
       $.each(room_history,function(i,e){
-          menu.append('<div class="item"><span class="description" onclick="remove_historys('+i+')">'
-                      +'<i class="remove icon"></i></span><a href="'+e+'">'+format_history(e,{{len(root)}})
-                      +'</a></div>');
+          menu.append('<div class="item" target="'+e+'"><span class="description" onclick="remove_historys('+i+')">'
+                      +'<i class="remove icon"></i></span>'+format_history(e,{{len(root)}})+'</div>');
       });
-      $('#histoy_dropdown').removeClass('transition hidden').dropdown();
+      $('#histoy_dropdown')
+        .removeClass('transition hidden')
+        .dropdown({
+            onChange: function(t,h,selectedItem) {
+              window.location = selectedItem.attr('target');
+            }
+          });;
   }
 }
 $(function(){

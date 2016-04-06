@@ -28,15 +28,15 @@
 {% end %}
 
 {% block content %}
-  <div class="ui sidebar" style="background: #111;width:15em;">
+  <div class="ui thin left vertical pushable sidebar" style="background: #111;">
     <div id="userlist"></div>
   </div>
   <div class="pusher" style="height: 100%;overflow:hidden;">
     <div class="menu bar" id="menu_bar">
-        <div class="highlight unit" style="margin:0.5em 1em 0 1em!important;float:right;">
+        <div class="highlight unit" style="margin:0.5em 1em 0 1em!important;float:right;" id="historys">
           {% include historys.part.html %}
         </div>
-        <a href="{{root}}/" class="unit highlight" style="cursor:pointer;">
+        <a href="{{root}}/" class="unit highlight" style="cursor:pointer;" id="back_button">
           <i class="left arrow icon"></i>
         </a>
         <div onclick="$('.ui.sidebar').sidebar('toggle');" class="unit highlight" style="cursor:pointer;">
@@ -52,29 +52,30 @@
         <div class="unit">
           <div class="ui top left pointing dropdown highlight">
             <div class="text">Syntax</div>
+            <i class="dropdown icon"></i>
             <div class="menu" id="syntax_menu">
-              <div class="item" syntax="c_cpp">C/C++</div>
+              <div class="item" syntax="c_cpp" ext="cpp">C/C++</div>
               <div class="item" syntax="java">Java</div>
-              <div class="item" syntax="csharp">C#</div>
-              <div class="item" syntax="objectivec">Objective-C</div>
-              <div class="item" syntax="python">Python</div>
-              <div class="item" syntax="javascript">Javascript</div>
+              <div class="item" syntax="csharp" ext="cs">C#</div>
+              <div class="item" syntax="objectivec" ext="m">Objective-C</div>
+              <div class="item" syntax="python" ext="py">Python</div>
+              <div class="item" syntax="javascript" ext="js">Javascript</div>
               <div class="item" syntax="ruby">Ruby</div>
               <div class="item" syntax="swift">Swift</div>
               <div class="item" syntax="html">HTML</div>
               <div class="item" syntax="css">CSS</div>
               <div class="item" syntax="php">PHP</div>
               <div class="item" syntax="sql">SQL</div>
-              <div class="item" syntax="autohotkey">Autohotkey</div>
+              <div class="item" syntax="autohotkey" ext="ahk">Autohotkey</div>
               <div class="item" syntax="lisp">Lisp</div>
               <div class="item" syntax="lua">Lua</div>
             </div>
           </div>
         </div>
         <div class="unit">
-          Theme:
           <div class="ui top left pointing dropdown highlight">
             <div class="text">Theme</div>
+            <i class="dropdown icon"></i>
             <div class="menu" id="theme_menu">
               <div class="item" theme="monokai" theme-style="dark">Monokai</div>
               <div class="item" theme="mono_industrial" theme-style="dark">Mono Industrial</div>
@@ -96,6 +97,9 @@
         <div class="unit" id="text_warp_toggle" style="cursor:pointer;" onclick="warpmode.toggle()">
         </div>
         {% end %}
+        <div class="unit highlight" style="cursor:pointer;" onclick="save.auto()">
+          Save as File
+        </div>
         <!--<div class="unit" onclick="$('#url_share_input').select();">
           <span>Collaborate with friends:</span>
           <div class="ui transparent input" style="width:20em;">
@@ -107,41 +111,58 @@
   </div>
 
   <script>
-    function load_theme()
+    theme = {};
+    syntax = {};
+    save = {};
+    theme.load = function()
     {
-      var theme = 'monokai';
+      var theme_code = 'monokai';
+      if (get_url_parameter('theme'))
+        lang = get_url_parameter('theme');
       if (Cookies.get('astnote-code-theme'))
-        theme = Cookies.get('astnote-code-theme');
-      set_theme(theme);
-      var menu_item = $('#theme_menu .item[theme="'+theme+'"]');
+        theme_code = Cookies.get('astnote-code-theme');
+      theme.set(theme_code);
+      var menu_item = $('#theme_menu .item[theme="'+theme_code+'"]');
       if (menu_item) menu_item.click();
     }
-    function set_theme(theme)
+    theme.set = function(theme_code)
     {
-      var menu_item = $('#theme_menu .item[theme="'+theme+'"]');
+      theme.val = theme_code;
+      var menu_item = $('#theme_menu .item[theme="'+theme_code+'"]');
       if (menu_item && menu_item.attr('theme-style') == 'dark')
         $('#menu_bar').addClass('dark');
       else
         $('#menu_bar').removeClass('dark');
-      editor.setTheme("ace/theme/"+theme);
-      Cookies.set('astnote-code-theme',theme,{ expires: 90 });
+      editor.setTheme("ace/theme/"+theme_code);
+      if(!get_url_parameter('demo'))
+        Cookies.set('astnote-code-theme',theme_code,{ expires: 90 });
     }
-    function load_syntax()
+    syntax.load = function ()
     {
       var lang = 'python';
+      if (get_url_parameter('syntax'))
+        lang = get_url_parameter('syntax');
       if (Cookies.get('astnote-code-syntax'))
         lang = Cookies.get('astnote-code-syntax');
-      set_syntax(lang);
+      syntax.set(lang);
       var menu_item = $('#syntax_menu .item[syntax="'+lang+'"]');
       if (menu_item) menu_item.click();
     }
-    function set_syntax(lang)
+    syntax.set = function(lang)
     {
+      syntax.val = lang;
       session.setMode("ace/mode/"+lang);
-      Cookies.set('astnote-code-syntax',lang,{ expires: 10, path:window.location.pathname});
+      if(!get_url_parameter('demo'))
+        Cookies.set('astnote-code-syntax',lang,{ expires: 10, path:window.location.pathname});
+    }
+    syntax.get_ext = function()
+    {
+      var menu_item = $('#syntax_menu .item[syntax="'+syntax.val+'"]');
+      if (menu_item && menu_item.attr('ext')) return menu_item.attr('ext');
+      return syntax.val;
     }
     function resize_pad(){
-      var height = $(window).height() - $('#menu_bar').height() - ($('.firepad-toolbar').height() || 0) - 8;
+      var height = $(window).height() - ($('#menu_bar').height()||0) - ($('.firepad-toolbar').height() || 0) - 8;
       $('#firepad').css('height',height).css('max-height',height);
     }
     function update_username(userName)
@@ -151,6 +172,30 @@
     function update_color(userName)
     {
       Cookies.set('astnote-user-color',userName,{ expires: 90, path:'{{root}}/'});
+    }
+    save.get_name = function(ext)
+    {
+      ext = ext || 'txt';
+      return 'astnote-{{name}}-'+(new Date()).toISOString().replace(/:|T/g,'-')+'.'+ext;
+    }
+    save.code = function(filename) {
+      filename = filename || save.get_name(syntax.get_ext());
+      download(filename,firepad.getText());
+    }
+    save.rich = function(filename) {
+      filename = filename || save.get_name('html');
+      var html_data = '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Astnote Save</title></head><body>'+firepad.getHtml() + '</body></html>';
+      download(filename,html_data);
+    }
+    save.plain = function(filename) {
+      filename = filename || save.get_name('txt');
+      download(filename,firepad.getText());
+    }
+    save.auto = function()
+    {
+      if('{{mode}}'=='c') save.code();
+      else if ('{{mode}}'=='r') save.rich();
+      else save.plain();
     }
     function warpmode(value)
     {
@@ -168,8 +213,12 @@
   </script>
   <script>
     $('.ui.dropdown').dropdown();
-    $('#syntax_menu .item').on('click',function(){set_syntax($(this).attr('syntax'))});
-    $('#theme_menu .item').on('click',function(){set_theme($(this).attr('theme'))});
+    $('#syntax_menu .item').on('click',function(){syntax.set($(this).attr('syntax'))});
+    $('#theme_menu .item').on('click',function(){theme.set($(this).attr('theme'))});
+    $('#histoy_dropdown').addClass('top right pointing');
+    $('.ui.sidebar').sidebar({dimPage:false,closable:false});
+    if(get_url_parameter('bar') == 'hidden') $('#menu_bar').hide();
+    if(get_url_parameter('back') == 'hidden') $('#back_button').hide();
     window.addEventListener('resize',resize_pad, true);
     $(resize_pad);
 
@@ -181,23 +230,33 @@
     var userId = Cookies.get('astnote-user-id');
     var userName = Cookies.get('astnote-user-name');
     var userColor = Cookies.get('astnote-user-color');
-    if (!userId || window.location.hash == '#new_user')
+    var force_new_user = get_url_parameter('user') == 'new';
+    if (!userId || force_new_user)
     {
       userId = Math.floor(Math.random() * 9999999999).toString();
       Cookies.set('astnote-user-id',userId,{ expires: 90, path:'{{root}}/'});
     }
-    if (!userName || window.location.hash == '#new_user')
+    if (!userName || force_new_user)
     {
       userName = 'Guset ' + Math.floor(Math.random() * 999).toString();
       update_username(userName);
     }
-    if (!userColor || window.location.hash == '#new_user')
+    if (!userColor || force_new_user)
     {
       userColor = ramdom_hsv();
       update_color(userColor);
     }
 
 
+    $(window).bind('keydown', function(event) {
+      if (event.ctrlKey || event.metaKey)
+        if (String.fromCharCode(event.which).toLowerCase() == 's')
+        {
+          event.preventDefault();
+          if (confirm("Do you want save this note to file ?"))
+            save.auto();
+        }
+    });
     /// ---- Modes ---- ///
     if (mode == 'c')
     {
@@ -208,8 +267,8 @@
       warpmode(true);
       session.setUseWorker(false);
       var firepad = Firepad.fromACE(firepadRef, editor);
-      load_theme();
-      load_syntax();
+      theme.load();
+      syntax.load();
     }
     else if (mode == 'r')
     {
@@ -219,7 +278,6 @@
       firepad = Firepad.fromCodeMirror(firepadRef, codeMirror,
           { richTextToolbar: true, richTextShortcuts: true, userId: userId});
     }
-
     else
     {
       //plain text
@@ -236,25 +294,35 @@
         firepad.setText('Check out the user list to the left!');
       }
     });*/
-    var room_url = window.location.pathname;
-    var room_history = access_cookies('history');
-    var is_new_room = true;
-    if (!room_history) room_history = [];
-    if (room_history.length >= 7) room_history.shift();
-    var room_index = room_history.indexOf(room_url);
-    if (room_index > -1)
-        room_history.splice(room_index, 1);
-    room_history.push(room_url);
-    access_cookies('history',room_history);
-    access_cookies('prev',room_url);
-    var clipboard = new Clipboard('#share_button');
-    $('#share_button').attr('data-clipboard-text',window.location.origin + window.location.pathname);
-    clipboard.on('success', function(e) {
-      var orginal_content = $('#share_button').html();
-      $('#share_button').text('Url Copied!').addClass('highlight');
-      setTimeout(function() {
-        $('#share_button').html(orginal_content).removeClass('highlight');
-      },2000);
-    });
+    if(get_url_parameter('demo'))
+    {
+      $('#back_button').hide();
+      $('#share_button').hide();
+      $('#historys').hide();
+    }
+    else
+    {
+      var room_url = window.location.pathname;
+      var room_history = access_cookies('history');
+      var is_new_room = true;
+      if (!room_history) room_history = [];
+      if (room_history.length >= 7) room_history.shift();
+      var room_index = room_history.indexOf(room_url);
+      if (room_index > -1)
+          room_history.splice(room_index, 1);
+      room_history.push(room_url);
+
+      access_cookies('history',room_history);
+
+      var clipboard = new Clipboard('#share_button');
+      $('#share_button').attr('data-clipboard-text',window.location.origin + window.location.pathname);
+      clipboard.on('success', function(e) {
+        var orginal_content = $('#share_button').html();
+        $('#share_button').text('Url Copied!').addClass('highlight');
+        setTimeout(function() {
+          $('#share_button').html(orginal_content).removeClass('highlight');
+        },2000);
+      });
+    }
   </script>
 {% end %}

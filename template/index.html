@@ -7,30 +7,35 @@
   <h1 class="ui header">
     Astnote
     <div class="sub header">
-    A online collaborative text and code editor<br>
-    <span style="font-style:italic;opacity:0.8">powered by <a href="https://firepad.io/">Firepad</a></span>
+    An online real-time collaborative text editor.<br>
+    <span style="font-style:italic;opacity:0.8">powered by <a href="https://firepad.io/" target="_blank">Firepad</a></span>
     </div>
   </h1>
-  <a href="{{root}}/r/demo/423" class="ui orange button">
-    Text Demo
-  </a>
-  <a href="{{root}}/c/demo/468" class="ui orange button">
-    Code Demo
-  </a>
-  <br><br>
-  <a href="{{root}}/random/r" class="ui olive icon labeled button">
+  <div class="ui compact teal button" style="margin-bottom:0.5em">
+  {% include historys.part.html %}
+  </div>
+  <a href="{{root}}/random/r" class="ui compact olive icon labeled button" style="margin-bottom:0.5em">
     <i class="icon plus"></i>
     Note
   </a>
-  <a href="{{root}}/random/c" class="ui olive icon labeled button">
-    <i class="icon plus"></i>
+  <a href="{{root}}/random/c" class="ui compact olive icon labeled button" style="margin-bottom:0.5em">
+    <i class="icon code"></i>
     Code
   </a>
-  <br><br>
-  <a class="ui blue button transition hidden" id="prev_room_button">
-      Go to previous note<br>
+  <!--<a class="ui blue button transition hidden" id="prev_room_button">
+      Previous:
       <span style="font-style:italic;margin-top:0.3em;opacity:0.7;"></span>
-  </a>
+  </a>-->
+  <br>
+  <h3 class="ui header">Rich Text Demo</h3>
+  <iframe src="{{root}}/r/demo/423?bar=hidden&demo=true"
+          style="width:100%;height:30em;border-width:1px;border-color:rgba(0,0,0,0.3);resize:vertical;">
+  </iframe>
+  <h3 class="ui header">Code Demo</h3>
+  <iframe src="{{root}}/c/demo/468?demo=true"
+          style="width:100%;height:30em;border-width:1px;border-color:rgba(0,0,0,0.3);resize:vertical;">
+  </iframe>
+  <br><br><br>
   <script>
     var room_url = access_cookies('prev');
     if (room_url)

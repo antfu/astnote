@@ -2,7 +2,7 @@
 * @Author: Anthony
 * @Date:   2016-04-06 01:57:54
 * @Last Modified by:   Anthony
-* @Last Modified time: 2016-04-06 17:46:43
+* @Last Modified time: 2016-04-07 01:02:31
 */
 
 'use strict';
@@ -37,7 +37,7 @@ function get_url_parameter(sParam) {
 function format_history(url,len_of_root)
 {
   len_of_root = len_of_root || 0;
-  return url.slice(len_of_root,url.length-4)
+  return url.slice(len_of_root+1,url.length-4)
 }
 
 function HSVtoRGB(h, s, v) {
@@ -83,4 +83,19 @@ function ramdom_hsv()
   ramdom_hsv.h %= 1;
   var rgb = HSVtoRGB(ramdom_hsv.h,0.5,0.95);
   return rgbToHex(rgb.r,rgb.g,rgb.b);
+}
+
+function download(filename, text) {
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    }
+    else {
+        pom.click();
+    }
 }
