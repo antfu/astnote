@@ -2,20 +2,22 @@
 # @Author: Anthony
 # @Date:   2016-03-30 12:48:58
 # @Last Modified by:   Anthony
-# @Last Modified time: 2016-04-06 04:44:06
+# @Last Modified time: 2016-04-06 08:33:23
 
 import sys
 import json
 import hashlib
 import time
+import random
+import string
 import tornado.web
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 from   configs.config   import configs
 
-def get_authcode(mode,name):
-    return hashlib.md5((mode + ':' + name + ':ant').encode()).hexdigest()[:6]
+def get_authcode(mode,name,amount=3):
+    return str(int(hashlib.md5((mode + ':' + name + ':ant').encode()).hexdigest(),16))[-amount:]
 
 class base_handler(tornado.web.RequestHandler):
     def get_template_namespace(self):
@@ -32,7 +34,7 @@ class index_handler(base_handler):
 
 class random_handler(base_handler):
     def get(self,mode):
-        name = get_authcode('random',str(time.time()))
+        name = ''.join([random.choice(string.digits) for x in range(6)])
         authcode = get_authcode(mode,name)
         self.redirect(configs.root+'/{mode}/{name}/{auth}'.format(mode=mode,name=name,auth=authcode))
 
@@ -67,7 +69,7 @@ app = tornado.web.Application(
     handlers=[
         (r'/',index_handler),
         (r'/random/(r|t|c)',random_handler),
-        (r'/ant/create/(r|t|c)/(\w+)',create_handler),
+        (r'/ant/(r|t|c)/(\w+)',create_handler),
         (r'/(r|t)/(\w+)/(\w+)',text_editors_handler),
         (r'/c/(\w+)/(\w+)',code_editors_handler),
         (r'.*',not_found_handler)

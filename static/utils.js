@@ -2,7 +2,7 @@
 * @Author: Anthony
 * @Date:   2016-04-06 01:57:54
 * @Last Modified by:   Anthony
-* @Last Modified time: 2016-04-06 04:54:05
+* @Last Modified time: 2016-04-06 07:35:48
 */
 
 'use strict';
@@ -37,5 +37,5 @@ function get_url_parameter(sParam) {
 function format_history(url,len_of_root)
 {
   len_of_root = len_of_root || 0;
-  return url.slice(len_of_root,url.length-6)
+  return url.slice(len_of_root,url.length-4)
 }

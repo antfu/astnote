@@ -11,11 +11,20 @@
     <span style="font-style:italic;opacity:0.8">powered by <a href="https://firepad.io/">Firepad</a></span>
     </div>
   </h1>
-  <a href="{{root}}/r/demo/613341" class="ui orange button">
-    Try Demo
+  <a href="{{root}}/r/demo/423" class="ui orange button">
+    Text Demo
   </a>
-  <a href="{{root}}/random/r" class="ui olive button">
-    Create a note
+  <a href="{{root}}/c/demo/468" class="ui orange button">
+    Code Demo
+  </a>
+  <br><br>
+  <a href="{{root}}/random/r" class="ui olive icon labeled button">
+    <i class="icon plus"></i>
+    Note
+  </a>
+  <a href="{{root}}/random/c" class="ui olive icon labeled button">
+    <i class="icon plus"></i>
+    Code
   </a>
   <br><br>
   <a class="ui blue button transition hidden" id="prev_room_button">
@@ -27,7 +36,7 @@
     if (room_url)
     {
         $('#prev_room_button').attr('href',room_url).removeClass('transition hidden');
-        $('#prev_room_button span').text(room_url.slice(0,room_url.length-6));
+        $('#prev_room_button span').text(format_history(room_url),'{{root}}'.length);
     }
   </script>
 </div>

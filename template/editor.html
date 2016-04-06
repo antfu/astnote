@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.10.0/codemirror.css" />
 
   <!-- ACE and theme files -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/ace.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
 
   <!-- Firepad -->
   <script src="https://cdn.firebase.com/libs/firepad/1.3.0/firepad.min.js"></script>
@@ -22,12 +22,7 @@
 
   <style>
     html { height: 100%; }
-    body { margin: 0; height: 100%; }
-    .borderless.button
-    {
-      border:none !important;
-      box-shadow:none !important;
-    }
+    body { margin: 0; height: 100%;}
   </style>
 {% end %}
 
@@ -35,37 +30,127 @@
   <div class="ui sidebar" style="background: #111;">
     <div id="userlist"></div>
   </div>
-  <div class="pusher" style="height: 100%;">
-    <div style="padding-bottom:0.5em;border-bottom: 1px solid #c9c9c9;background:#fff">
-        <a onclick="$('.ui.sidebar').sidebar('toggle');"
-           style="display:inline-block;margin:0.5em 0 0 1em;color:#666;cursor:pointer;">
+  <div class="pusher" style="height: 100%;overflow:hidden;">
+    <div class="menu bar" id="menu_bar">
+        <div class="highlight unit" style="margin:0.5em 1em 0 1em!important;float:right;">
+          {% include historys.part.html %}
+        </div>
+        <a href="{{root}}/" class="unit highlight" style="cursor:pointer;">
+          <i class="left arrow icon"></i>
+        </a>
+        <div onclick="$('.ui.sidebar').sidebar('toggle');" class="unit highlight" style="cursor:pointer;">
           <i class="users icon"></i>
           Online Editors
-        </a>
-        <a style="display:inline-block;margin:0.5em 0 0 1em;color:#9c9c9c;">
-          Mode: <span id="mode_display" style="color:#555;"></span>
-        </a>
+        </div>
+        <div class="unit">
+          Mode: <span id="mode_display" class="highlight"></span>
+        </div>
         {% if mode == 'c' %}
-        <a style="display:inline-block;margin:0.5em 0 0 1em;color:#9c9c9c;">
-          Syntax: <span id="syntax_display" style="color:#555;"></span>
-        </a>
-        {% end %}
-        <div onclick="$('#url_share_input').select();"
-             style="color:#9c9c9c;display:inline-block;margin:0.5em 0 0 1em">
-          <span>Edit with friends:</span>
-          <div class="ui transparent input" style="width:20em;">
-            <input type="text" id="url_share_input" readonly="readonly"
-                   style="text-decoration:underline;color:#666;">
+        <div class="unit">
+          Syntax:
+          <div class="ui top left pointing dropdown highlight">
+            <div class="text">Syntax</div>
+            <div class="menu" id="syntax_menu">
+              <div class="item" syntax="c_cpp">C/C++</div>
+              <div class="item" syntax="java">Java</div>
+              <div class="item" syntax="csharp">C#</div>
+              <div class="item" syntax="objectivec">Objective-C</div>
+              <div class="item" syntax="python">Python</div>
+              <div class="item" syntax="javascript">Javascript</div>
+              <div class="item" syntax="ruby">Ruby</div>
+              <div class="item" syntax="swift">Swift</div>
+              <div class="item" syntax="html">HTML</div>
+              <div class="item" syntax="css">CSS</div>
+              <div class="item" syntax="php">PHP</div>
+              <div class="item" syntax="sql">SQL</div>
+              <div class="item" syntax="autohotkey">Autohotkey</div>
+              <div class="item" syntax="lisp">Lisp</div>
+              <div class="item" syntax="lua">Lua</div>
+            </div>
           </div>
         </div>
-        <a style="display:inline-block;margin:0.5em 1em 0 1em;color:#9c9c9c;float:right;">
-          {% include historys.part.html %}
-        </a>
+        <div class="unit">
+          Theme:
+          <div class="ui top left pointing dropdown highlight">
+            <div class="text">Theme</div>
+            <div class="menu" id="theme_menu">
+              <div class="item" theme="monokai" theme-style="dark">Monokai</div>
+              <div class="item" theme="mono_industrial" theme-style="dark">Mono Industrial</div>
+              <div class="item" theme="tomorrow">Tomorrow</div>
+              <div class="item" theme="tomorrow_night" theme-style="dark">Tomorrow Night</div>
+              <div class="item" theme="twilight" theme-style="dark">Twilight</div>
+              <div class="item" theme="textmate">Textmate</div>
+              <div class="item" theme="solarized_light">Solarized Light</div>
+              <div class="item" theme="solarized_dark" theme-style="dark">Solarized Dark</div>
+              <div class="item" theme="github">Github</div>
+              <div class="item" theme="dawn">Dawn</div>
+              <div class="item" theme="terminal" theme-style="dark">Terminal</div>
+              <div class="item" theme="xcode">Xcode</div>
+              <div class="item" theme="crimson_editor">Crimson</div>
+              <div class="item" theme="ambiance" theme-style="dark">Ambiance</div>
+            </div>
+          </div>
+        </div>
+        {% end %}
+        <!--<div class="unit" onclick="$('#url_share_input').select();">
+          <span>Collaborate with friends:</span>
+          <div class="ui transparent input" style="width:20em;">
+            <input type="text" id="url_share_input" readonly="readonly"
+                   style="text-decoration:underline;" class="highlight">
+          </div>
+        </div>-->
     </div>
-    <div id="firepad" style="height:100%"></div>
+    <div id="firepad" style="height:100%;"></div>
   </div>
 
   <script>
+    function load_theme()
+    {
+      var theme = 'monokai';
+      if (Cookies.get('astnote-code-theme'))
+        theme = Cookies.get('astnote-code-theme');
+      set_theme(theme);
+      var menu_item = $('#theme_menu .item[theme="'+theme+'"]');
+      if (menu_item) menu_item.click();
+    }
+    function set_theme(theme)
+    {
+      var menu_item = $('#theme_menu .item[theme="'+theme+'"]');
+      if (menu_item && menu_item.attr('theme-style') == 'dark')
+        $('#menu_bar').addClass('dark');
+      else
+        $('#menu_bar').removeClass('dark');
+      editor.setTheme("ace/theme/"+theme);
+      Cookies.set('astnote-code-theme',theme,{ expires: 90 });
+    }
+    function load_syntax()
+    {
+      var lang = 'python';
+      if (window.location.hash)
+        lang = window.location.hash.slice(1);
+      else if (Cookies.get('astnote-code-syntax'))
+        lang = Cookies.get('astnote-code-syntax');
+      set_syntax(lang);
+      var menu_item = $('#syntax_menu .item[syntax="'+lang+'"]');
+      if (menu_item) menu_item.click();
+    }
+    function set_syntax(lang)
+    {
+      session.setMode("ace/mode/"+lang);
+      Cookies.set('astnote-code-syntax',lang,{ expires: 10, path:window.location.pathname});
+    }
+    function resize_pad(){
+      var height = $(window).height() - $('#menu_bar').height() - ($('.firepad-toolbar').height() || 0) - 8;
+      $('#firepad').css('height',height).css('max-height',height);
+    }
+  </script>
+  <script>
+    $(window).on('hashchange', function() {
+      load_syntax();
+    });
+    window.addEventListener('resize',resize_pad, true);
+    $(resize_pad);
+
     var fireurl = '{{firebase}}/astnote/{{mode}}/{{name}}';
     var mode = '{{mode}}';
 
@@ -78,24 +163,15 @@
     if (mode == 'c')
     {
       //code
-      var lang = window.location.hash || 'python';
+      var lang = (window.location.hash || '#python').slice(1);
       $('#mode_display').text('Code');
-      $('#syntax_display').text(lang[0].toUpperCase() + lang.slice(1).toLowerCase());
       var editor = ace.edit("firepad");
-      editor.setTheme("ace/theme/solarized_light");
       var session = editor.getSession();
       session.setUseWrapMode(true);
       session.setUseWorker(false);
-      try
-      {
-        session.setMode("ace/mode/"+lang);
-      }
-      catch(err)
-      {
-        consloe.log(err);
-        alert('We may not support lanuage "'+lang[0].toUpperCase() + lang.slice(1).toLowerCase()+'" for Syntax highlighting, but you can still use the other functions.');
-      }
       var firepad = Firepad.fromACE(firepadRef, editor);
+      load_theme();
+      load_syntax();
     }
     else if (mode == 'r')
     {
@@ -133,5 +209,9 @@
     room_history.push(room_url);
     access_cookies('history',room_history);
     access_cookies('prev',room_url);
+
+    $('.ui.dropdown').dropdown();
+    $('#syntax_menu .item').on('click',function(){set_syntax($(this).attr('syntax'))});
+    $('#theme_menu .item').on('click',function(){set_theme($(this).attr('theme'))});
   </script>
 {% end %}
