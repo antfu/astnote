@@ -1,7 +1,7 @@
 var FirepadUserList = (function() {
-  function FirepadUserList(ref, place, userId, displayName) {
+  function FirepadUserList(ref, place, userId, displayName, userColor) {
     if (!(this instanceof FirepadUserList)) {
-      return new FirepadUserList(ref, place, userId, displayName);
+      return new FirepadUserList(ref, place, userId, displayName, userColor);
     }
 
     this.ref_ = ref;
@@ -12,11 +12,15 @@ var FirepadUserList = (function() {
     var self = this;
     this.hasName_ = !!displayName;
     this.displayName_ = displayName || 'Guest ' + Math.floor(Math.random() * 1000);
+    this.color_ = userColor || ramdom_hsv();
     this.firebaseOn_(ref.root().child('.info/connected'), 'value', function(s) {
       if (s.val() === true && self.displayName_) {
-        var nameRef = ref.child(self.userId_).child('name');
-        nameRef.onDisconnect().remove();
-        nameRef.set(self.displayName_);
+        var nameref = ref.child(self.userId_).child('name');
+        nameref.onDisconnect().remove();
+        nameref.set(self.displayName_);
+        var colorref = ref.child(self.userId_).child('color');
+        colorref.onDisconnect().remove();
+        colorref.set(self.color_);
       }
     });
 
@@ -83,6 +87,14 @@ var FirepadUserList = (function() {
       nameHint.style.display = 'none';
       nameInput.blur();
       self.displayName_ = name;
+      update_username(name);
+      stopEvent(e);
+    });
+
+    on(colorDiv, 'click', function(e){
+      var new_color = ramdom_hsv();
+      myUserRef.child('color').set(new_color);
+      update_color(new_color);
       stopEvent(e);
     });
 

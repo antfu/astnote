@@ -91,6 +91,10 @@
             </div>
           </div>
         </div>
+        <div class="unit">
+          Warp:
+          <span id="text_warp_toggle" class="highlight" onclick="warpmode.toggle()"></span>
+        </div>
         {% end %}
         <!--<div class="unit" onclick="$('#url_share_input').select();">
           <span>Collaborate with friends:</span>
@@ -143,6 +147,27 @@
       var height = $(window).height() - $('#menu_bar').height() - ($('.firepad-toolbar').height() || 0) - 8;
       $('#firepad').css('height',height).css('max-height',height);
     }
+    function update_username(userName)
+    {
+      Cookies.set('astnote-user-name',userName,{ expires: 90, path:'{{root}}/'});
+    }
+    function update_color(userName)
+    {
+      Cookies.set('astnote-user-color',userName,{ expires: 90, path:'{{root}}/'});
+    }
+    function warpmode(value)
+    {
+      if (value != undefined)
+      {
+        warpmode.warp = value;
+        session.setUseWrapMode(warpmode.warp);
+        $('#text_warp_toggle').text(warpmode.warp?'True':'False');
+      }
+      return warpmode.warp;
+    }
+    warpmode.toggle = function(){
+      warpmode(!warpmode.warp);
+    }
   </script>
   <script>
     $(window).on('hashchange', function() {
@@ -158,8 +183,27 @@
 
     var firepadRef = new Firebase(fireurl);
     var firepad = undefined;
-    var userId = Math.floor(Math.random() * 9999999999).toString();
+    var userId = Cookies.get('astnote-user-id');
+    var userName = Cookies.get('astnote-user-name');
+    var userColor = Cookies.get('astnote-user-color');
+    if (!userId)
+    {
+      userId = Math.floor(Math.random() * 9999999999).toString();
+      Cookies.set('astnote-user-id',userId,{ expires: 90, path:'{{root}}/'});
+    }
+    if (!userName)
+    {
+      userName = 'Guset ' + Math.floor(Math.random() * 999).toString();
+      update_username(userName);
+    }
+    if (!userColor)
+    {
+      userColor = ramdom_hsv();
+      update_color(userColor);
+    }
 
+
+    /// ---- Modes ---- ///
     if (mode == 'c')
     {
       //code
@@ -167,7 +211,7 @@
       $('#mode_display').text('Code');
       var editor = ace.edit("firepad");
       var session = editor.getSession();
-      session.setUseWrapMode(true);
+      warpmode(true);
       session.setUseWorker(false);
       var firepad = Firepad.fromACE(firepadRef, editor);
       load_theme();
@@ -191,7 +235,7 @@
     }
 
     var firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'),
-        document.getElementById('userlist'), userId);
+        document.getElementById('userlist'), userId, userName, userColor);
     /*
     firepad.on('ready', function() {
       if (firepad.isHistoryEmpty()) {
