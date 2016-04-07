@@ -1,9 +1,5 @@
 #!/usr/bin/env python3.5
 # -*- coding: utf-8 -*-
-# @Author: Anthony
-# @Date:   2016-03-30 12:48:58
-# @Last Modified by:   Anthony
-# @Last Modified time: 2016-04-07 22:57:17
 
 import sys
 import json

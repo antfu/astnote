@@ -1,10 +1,16 @@
 #!/bin/bash
-# @Author: Anthony
-# @Date:   2016-04-07 22:57:58
-# @Last Modified by:   Anthony
-# @Last Modified time: 2016-04-07 23:04:57
 
-do git pull
-do chmod +x astnote.py
-do pkill astnote.py
-do nohup astnote.py > nohup.out &
+echo "> Git pull:"
+git pull || true
+echo ""
+echo "> Kill previous one:"
+kill -9 `cat pid.log` || true
+echo ""
+echo "> Run server:"
+nohup python3.5 astnote.py > nohup.log &
+echo $! > pid.log
+echo ""
+echo "> Track the output:"
+tail -f nohup.log || true
+echo ""
+echo "> End <"
