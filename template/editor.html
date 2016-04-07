@@ -14,7 +14,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
 
   <!-- Firepad -->
-  <script src="https://cdn.firebase.com/libs/firepad/1.3.0/firepad.min.js"></script>
+  <script src="{{root}}{{ static_url("firepad.min.js") }}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js"></script>
 
   <script src="{{root}}{{ static_url("firepad-userlist.js") }}"></script>
@@ -46,8 +46,6 @@
           id="share_button">
           Edit with friends
         </div>
-        <!--<div class="unit" id="mode_display">
-        </div>-->
         {% if mode == 'c' %}
         <div class="unit">
           <div class="ui top left pointing dropdown highlight">
@@ -100,16 +98,23 @@
         <div class="unit highlight" style="cursor:pointer;" onclick="save.auto()">
           Save as File
         </div>
-        <!--<div class="unit" onclick="$('#url_share_input').select();">
-          <span>Collaborate with friends:</span>
-          <div class="ui transparent input" style="width:20em;">
-
-          </div>
-        </div>-->
     </div>
     <div id="firepad" style="height:100%;"></div>
   </div>
-
+  <script>
+  //firepad Modify
+  firepad.RichTextToolbar.prototype.makeColorDropdown_ = function() {
+    var colors = ['#fff', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'grey'];
+    var items = [];
+    for(var i = 0; i < colors.length; i++) {
+      var content = utils.elt('div');
+      content.className = 'firepad-color-dropdown-item';
+      content.setAttribute('style', 'background-color:' + colors[i]);
+      items.push({ content: content, value: colors[i] });
+    }
+    return this.makeDropdown_('Color', 'color', items);
+  };
+  </script>
   <script>
     theme = {};
     syntax = {};

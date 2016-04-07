@@ -1,16 +1,3 @@
-/*!
- * Firepad is an open-source, collaborative code and text editor. It was designed
- * to be embedded inside larger applications. Since it uses Firebase as a backend,
- * it requires no server-side code and can be added to any web app simply by
- * including a couple JavaScript files.
- *
- * Firepad 0.0.0
- * http://www.firepad.io/
- * License: MIT
- * Copyright: 2014 Firebase
- * With code from ot.js (Copyright 2012-2013 Tim Baumann)
- */
-
 (function (name, definition, context) {
   //try CommonJS, then AMD (require.js), then use global.
   if (typeof module != 'undefined' && module.exports) module.exports = definition();
@@ -1800,7 +1787,9 @@ firepad.RichTextToolbar = (function(global) {
   };
 
   RichTextToolbar.prototype.makeColorDropdown_ = function() {
-    var colors = ['black', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'grey'];
+    var colors = ['#F62926', '#FD7400', '#F7B601', '#79BD30',
+                  '#1F8A70', '#009EEC', '#8353FF', '#9B54A6',
+                  '#E64C66', '#73532D', '#928E83', '#000000'];
 
     var items = [];
     for(var i = 0; i < colors.length; i++) {
@@ -1815,7 +1804,7 @@ firepad.RichTextToolbar = (function(global) {
   RichTextToolbar.prototype.makeDropdown_ = function(title, eventName, items, value_suffix) {
     value_suffix = value_suffix || "";
     var self = this;
-    var button = utils.elt('a', title + ' \u25be', { 'class': 'firepad-btn firepad-dropdown' });
+    var button = utils.elt('a', title , { 'class': 'firepad-btn firepad-dropdown' });
     var list = utils.elt('ul', [ ], { 'class': 'firepad-dropdown-menu' });
     button.appendChild(list);
 
