@@ -11,21 +11,17 @@
     <span style="font-style:italic;opacity:0.8">powered by <a href="https://firepad.io/" target="_blank">Firepad</a></span>
     </div>
   </h1>
-  <div class="ui compact teal button" style="margin-bottom:0.5em">
+  <div class="ui compact teal button transition hidden" style="margin-bottom:0.5em" id="historys_button">
   {% include historys.part.html %}
   </div>
-  <a href="{{root}}/random/r" class="ui compact olive icon labeled button" style="margin-bottom:0.5em">
+  <a href="{{root}}/random/r" class="ui compact teal icon labeled button" style="margin-bottom:0.5em">
     <i class="icon plus"></i>
     Note
   </a>
-  <a href="{{root}}/random/c" class="ui compact olive icon labeled button" style="margin-bottom:0.5em">
+  <a href="{{root}}/random/c" class="ui compact teal icon labeled button" style="margin-bottom:0.5em">
     <i class="icon code"></i>
     Code
   </a>
-  <!--<a class="ui blue button transition hidden" id="prev_room_button">
-      Previous:
-      <span style="font-style:italic;margin-top:0.3em;opacity:0.7;"></span>
-  </a>-->
   <br>
   <h3 class="ui header">Rich Text Demo</h3>
   <iframe src="{{root}}/r/demo/423?bar=hidden&demo=true"
@@ -42,6 +38,10 @@
     {
         $('#prev_room_button').attr('href',room_url).removeClass('transition hidden');
         $('#prev_room_button span').text(format_history(room_url),'{{root}}'.length);
+    }
+    if (room_history)
+    {
+      $('#historys_button').removeClass('transition hidden');
     }
   </script>
 </div>

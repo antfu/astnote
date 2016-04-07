@@ -6,6 +6,7 @@
 </div>
 
 <script>
+var room_history = access_cookies('history');
 function remove_historys(index)
 {
   var room_history = access_cookies('history');
@@ -17,7 +18,6 @@ function remove_historys(index)
 }
 function display_historys()
 {
-  var room_history = access_cookies('history');
   var menu = $('#histoy_dropdown .menu').empty();
   if (room_history)
   {
