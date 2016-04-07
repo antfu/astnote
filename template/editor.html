@@ -20,11 +20,6 @@
   <script src="{{root}}{{ static_url("firepad-userlist.js") }}"></script>
   <link rel="stylesheet" href="{{root}}{{ static_url("firepad-userlist.css") }}" />
   <link rel="stylesheet" href="{{root}}{{ static_url("firepad.css") }}" />
-
-  <style>
-    html { height: 100%; }
-    body { margin: 0; height: 100%;}
-  </style>
 {% end %}
 
 {% block content %}
@@ -95,30 +90,17 @@
         <div class="unit" id="text_warp_toggle" style="cursor:pointer;" onclick="warpmode.toggle()">
         </div>
         {% end %}
-        <div class="unit highlight" style="cursor:pointer;" onclick="save.auto()">
+        <div class="unit highlight" style="cursor:pointer;" onclick="save()">
           Save as File
         </div>
     </div>
     <div id="firepad" style="height:100%;"></div>
   </div>
+{% end %}
+{% block scripts %}
   <script>
-  //firepad Modify
-  firepad.RichTextToolbar.prototype.makeColorDropdown_ = function() {
-    var colors = ['#fff', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'grey'];
-    var items = [];
-    for(var i = 0; i < colors.length; i++) {
-      var content = utils.elt('div');
-      content.className = 'firepad-color-dropdown-item';
-      content.setAttribute('style', 'background-color:' + colors[i]);
-      items.push({ content: content, value: colors[i] });
-    }
-    return this.makeDropdown_('Color', 'color', items);
-  };
-  </script>
-  <script>
-    theme = {};
-    syntax = {};
-    save = {};
+    var theme = {};
+    var syntax = {};
     theme.load = function()
     {
       var theme_code = 'monokai';
@@ -166,43 +148,7 @@
       if (menu_item && menu_item.attr('ext')) return menu_item.attr('ext');
       return syntax.val;
     }
-    function resize_pad(){
-      var height = $(window).height() - ($('#menu_bar').height()||0) - ($('.firepad-toolbar').height() || 0) - 8;
-      $('#firepad').css('height',height).css('max-height',height);
-    }
-    function update_username(userName)
-    {
-      Cookies.set('astnote-user-name',userName,{ expires: 90, path:'{{root}}/'});
-    }
-    function update_color(userName)
-    {
-      Cookies.set('astnote-user-color',userName,{ expires: 90, path:'{{root}}/'});
-    }
-    save.get_name = function(ext)
-    {
-      ext = ext || 'txt';
-      return 'astnote-{{name}}-'+(new Date()).toISOString().replace(/:|T/g,'-')+'.'+ext;
-    }
-    save.code = function(filename) {
-      filename = filename || save.get_name(syntax.get_ext());
-      download(filename,firepad.getText());
-    }
-    save.rich = function(filename) {
-      filename = filename || save.get_name('html');
-      var html_data = '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Astnote Save</title></head><body>'+firepad.getHtml() + '</body></html>';
-      download(filename,html_data);
-    }
-    save.plain = function(filename) {
-      filename = filename || save.get_name('txt');
-      download(filename,firepad.getText());
-    }
-    save.auto = function()
-    {
-      if('{{mode}}'=='c') save.code();
-      else if ('{{mode}}'=='r') save.rich();
-      else save.plain();
-    }
-    function warpmode(value)
+    warpmode = function(value)
     {
       if (value != undefined)
       {
@@ -215,11 +161,44 @@
     warpmode.toggle = function(){
       warpmode(!warpmode.warp);
     }
+    $(function(){
+      $('#syntax_menu .item').on('click',function(){syntax.set($(this).attr('syntax'))});
+      $('#theme_menu .item').on('click',function(){theme.set($(this).attr('theme'))});
+    });
+  </script>
+  <script>
+    function resize_pad(){
+      var height = $(window).height() - ($('#menu_bar').height()||0) - ($('.firepad-toolbar').height() || 0) - 8;
+      $('#firepad').css('height',height).css('max-height',height);
+    }
+    function update_username(userName)
+    {
+      Cookies.set('astnote-user-name',userName,{ expires: 90, path:'{{root}}/'});
+    }
+    function update_color(userName)
+    {
+      Cookies.set('astnote-user-color',userName,{ expires: 90, path:'{{root}}/'});
+    }
+  </script>
+  <script>
+    var save = function(filename){};
+    var get_file_name = function(ext)
+    {
+      ext = ext || 'txt';
+      return 'astnote-{{name}}-'+(new Date()).toISOString().replace(/:|T/g,'-')+'.'+ext;
+    }
+    $(window).bind('keydown', function(event) {
+      if (event.ctrlKey || event.metaKey)
+        if (String.fromCharCode(event.which).toLowerCase() == 's')
+        {
+          event.preventDefault();
+          if (confirm("Do you want save this note to file ?"))
+            save();
+        }
+    });
   </script>
   <script>
     $('.ui.dropdown').dropdown();
-    $('#syntax_menu .item').on('click',function(){syntax.set($(this).attr('syntax'))});
-    $('#theme_menu .item').on('click',function(){theme.set($(this).attr('theme'))});
     $('#histoy_dropdown').addClass('top right pointing');
     $('.ui.sidebar').sidebar({dimPage:false,closable:false});
     if(get_url_parameter('bar') == 'hidden') $('#menu_bar').hide();
@@ -228,8 +207,6 @@
     $(resize_pad);
 
     var fireurl = '{{firebase}}/astnote/{{mode}}/{{name}}';
-    var mode = '{{mode}}';
-
     var firepadRef = new Firebase(fireurl);
     var firepad = undefined;
     var userId = Cookies.get('astnote-user-id');
@@ -252,21 +229,10 @@
       update_color(userColor);
     }
 
-
-    $(window).bind('keydown', function(event) {
-      if (event.ctrlKey || event.metaKey)
-        if (String.fromCharCode(event.which).toLowerCase() == 's')
-        {
-          event.preventDefault();
-          if (confirm("Do you want save this note to file ?"))
-            save.auto();
-        }
-    });
     /// ---- Modes ---- ///
-    if (mode == 'c')
+    if ('{{mode}}' == 'c')
     {
       //code
-      $('#mode_display').text('Code');
       var editor = ace.edit("firepad");
       var session = editor.getSession();
       warpmode(true);
@@ -274,31 +240,37 @@
       var firepad = Firepad.fromACE(firepadRef, editor);
       theme.load();
       syntax.load();
+      save = function(filename){
+        filename = filename || get_file_name(syntax.get_ext());
+        download(filename,firepad.getText());
+      }
     }
-    else if (mode == 'r')
+    else if ('{{mode}}' == 'r')
     {
       //rich text
-      $('#mode_display').text('Rich Text');
       var codeMirror = CodeMirror(document.getElementById('firepad'), { lineWrapping: true });
       firepad = Firepad.fromCodeMirror(firepadRef, codeMirror,
           { richTextToolbar: true, richTextShortcuts: true, userId: userId});
+      save = function(filename){
+        filename = filename || get_file_name('html');
+        var html_data = '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Astnote Save</title></head><body>'+firepad.getHtml() + '</body></html>';
+        download(filename,html_data);
+      }
     }
     else
     {
       //plain text
-      $('#mode_display').text('Plain Text');
       var codeMirror = CodeMirror(document.getElementById('firepad'), { lineWrapping: true });
       firepad = Firepad.fromCodeMirror(firepadRef, codeMirror, { userId: userId});
+      save = function(filename){
+        filename = filename || get_file_name('txt');
+        download(filename,firepad.getText());
+      }
     }
 
     var firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'),
         document.getElementById('userlist'), userId, userName, userColor);
-    /*
-    firepad.on('ready', function() {
-      if (firepad.isHistoryEmpty()) {
-        firepad.setText('Check out the user list to the left!');
-      }
-    });*/
+
     if(get_url_parameter('demo'))
     {
       $('#back_button').hide();
@@ -316,7 +288,6 @@
       if (room_index > -1)
           room_history.splice(room_index, 1);
       room_history.push(room_url);
-
       access_cookies('history',room_history);
 
       var clipboard = new Clipboard('#share_button');
