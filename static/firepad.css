@@ -154,12 +154,13 @@ a.firepad-btn:active {
   display: inline-block;
   color: #333333;
   margin: 0.3em;
+  transition: all 0.2s ease-in-out;
+  opacity: 0.8;
 }
 
 .firepad-dropdown-menu a:hover {
-  color: #fff;
-  text-decoration: none;
-  background-color: #ffbf86;
+  transform: scale(1.2,1.2);
+  opacity: 1;
 }
 
 .firepad-color-dropdown-item {
