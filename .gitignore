@@ -3,3 +3,4 @@ __pycache__/
 .ipynb_checkpoints/
 *.log
 config_override.py
+nohup.out
