@@ -6,16 +6,24 @@
   <!-- Firebase -->
   <script src="https://cdn.firebase.com/js/client/2.3.2/firebase.js"></script>
 
-  <!-- CodeMirror -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.10.0/codemirror.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.10.0/codemirror.css" />
-
-  <!-- ACE and theme files -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
-
-  <!-- Firepad -->
-  <script src="{{root}}{{ static_url("firepad.min.js") }}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js"></script>
+
+  {% if mode == 'c' %}
+    <!-- ACE and theme files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
+  {% else %}
+    <!-- CodeMirror -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.10.0/codemirror.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.10.0/codemirror.css" />
+  {% end %}
+  {% if mode == 'm' %}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/github-markdown-css/2.2.1/github-markdown.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/>
+  {% end %}
+
+  <script src="{{root}}{{ static_url("firepad.min.js") }}"></script>
 
   <script src="{{root}}{{ static_url("firepad-userlist.js") }}"></script>
   <link rel="stylesheet" href="{{root}}{{ static_url("firepad-userlist.css") }}" />
@@ -23,12 +31,18 @@
 {% end %}
 
 {% block content %}
-  <div class="ui thin left vertical pushable sidebar" style="background: #111;">
-    <div id="userlist"></div>
+  <div class="ui left vertical pushable sidebar" style="background: #111;">
+    {% include userlist.part.html %}
   </div>
   <div class="pusher" style="height: 100%;overflow:hidden;">
     <div class="menu bar" id="menu_bar">
         <div class="highlight unit" style="margin:0.5em 1em 0 1em!important;float:right;" id="historys">
+          <div class="ui dropdown transition hidden" name="histoy_dropdown">
+            <div class="text">Recent</div>
+            <i class="dropdown icon"></i>
+            <div class="icon menu">
+            </div>
+          </div>
           {% include historys.part.html %}
         </div>
         <a href="{{root}}/" class="unit highlight" style="cursor:pointer;" id="back_button">
@@ -37,155 +51,53 @@
         <div onclick="$('.ui.sidebar').sidebar('toggle');" class="unit highlight" style="cursor:pointer;">
           <i class="users icon"></i>
         </div>
-        <div class="unit" class="unit highlight" style="cursor:pointer;"
-          id="share_button">
-          Edit with friends
+        <div class="unit highlight" style="cursor:pointer;" onclick="save()">
+          <i class="cloud download icon"></i>
         </div>
         {% if mode == 'c' %}
-        <div class="unit">
-          <div class="ui top left pointing dropdown highlight">
-            <div class="text">Syntax</div>
-            <i class="dropdown icon"></i>
-            <div class="menu" id="syntax_menu">
-              <div class="item" syntax="c_cpp" ext="cpp">C/C++</div>
-              <div class="item" syntax="java">Java</div>
-              <div class="item" syntax="csharp" ext="cs">C#</div>
-              <div class="item" syntax="objectivec" ext="m">Objective-C</div>
-              <div class="item" syntax="python" ext="py">Python</div>
-              <div class="item" syntax="javascript" ext="js">Javascript</div>
-              <div class="item" syntax="ruby">Ruby</div>
-              <div class="item" syntax="swift">Swift</div>
-              <div class="item" syntax="html">HTML</div>
-              <div class="item" syntax="css">CSS</div>
-              <div class="item" syntax="php">PHP</div>
-              <div class="item" syntax="sql">SQL</div>
-              <div class="item" syntax="autohotkey" ext="ahk">Autohotkey</div>
-              <div class="item" syntax="lisp">Lisp</div>
-              <div class="item" syntax="lua">Lua</div>
-            </div>
-          </div>
-        </div>
-        <div class="unit">
-          <div class="ui top left pointing dropdown highlight">
-            <div class="text">Theme</div>
-            <i class="dropdown icon"></i>
-            <div class="menu" id="theme_menu">
-              <div class="item" theme="monokai" theme-style="dark">Monokai</div>
-              <div class="item" theme="mono_industrial" theme-style="dark">Mono Industrial</div>
-              <div class="item" theme="tomorrow">Tomorrow</div>
-              <div class="item" theme="tomorrow_night" theme-style="dark">Tomorrow Night</div>
-              <div class="item" theme="twilight" theme-style="dark">Twilight</div>
-              <div class="item" theme="textmate">Textmate</div>
-              <div class="item" theme="solarized_light">Solarized Light</div>
-              <div class="item" theme="solarized_dark" theme-style="dark">Solarized Dark</div>
-              <div class="item" theme="github">Github</div>
-              <div class="item" theme="dawn">Dawn</div>
-              <div class="item" theme="terminal" theme-style="dark">Terminal</div>
-              <div class="item" theme="xcode">Xcode</div>
-              <div class="item" theme="crimson_editor">Crimson</div>
-              <div class="item" theme="ambiance" theme-style="dark">Ambiance</div>
-            </div>
-          </div>
-        </div>
-        <div class="unit" id="text_warp_toggle" style="cursor:pointer;" onclick="warpmode.toggle()">
-        </div>
+          {% include code.bar.part.html %}
+        {% elif mode == 'm' %}
+          {% include markdown.part.html %}
         {% end %}
-        <div class="unit highlight" style="cursor:pointer;" onclick="save()">
-          Save as File
-        </div>
     </div>
-    <div id="firepad" style="height:100%;"></div>
+    <div id="editor" style="position:relative;" class="{{'preview markdown' if mode == 'm' else ''}}">
+      <div id="firepad"></div>
+      {% if mode == 'm' %}
+        <div id="mark_preview">
+          <div class="button" onclick="markdown.save()">
+          Save as HTML
+          </div>
+          <div class="button" style="clear: left;" onclick="markdown.update()">
+          Refresh
+          </div>
+          <div class="markdown-body" style="margin-top:2em;"></div>
+        </div>
+      {% end %}
+    </div>
   </div>
 {% end %}
 {% block scripts %}
-  <script>
-    var theme = {};
-    var syntax = {};
-    theme.load = function()
-    {
-      var theme_code = 'monokai';
-      if (get_url_parameter('theme'))
-        lang = get_url_parameter('theme');
-      if (Cookies.get('astnote-code-theme'))
-        theme_code = Cookies.get('astnote-code-theme');
-      theme.set(theme_code);
-      var menu_item = $('#theme_menu .item[theme="'+theme_code+'"]');
-      if (menu_item) menu_item.click();
-    }
-    theme.set = function(theme_code)
-    {
-      theme.val = theme_code;
-      var menu_item = $('#theme_menu .item[theme="'+theme_code+'"]');
-      if (menu_item && menu_item.attr('theme-style') == 'dark')
-        $('#menu_bar').addClass('dark');
-      else
-        $('#menu_bar').removeClass('dark');
-      editor.setTheme("ace/theme/"+theme_code);
-      if(!get_url_parameter('demo'))
-        Cookies.set('astnote-code-theme',theme_code,{ expires: 90 });
-    }
-    syntax.load = function ()
-    {
-      var lang = 'python';
-      if (get_url_parameter('syntax'))
-        lang = get_url_parameter('syntax');
-      if (Cookies.get('astnote-code-syntax'))
-        lang = Cookies.get('astnote-code-syntax');
-      syntax.set(lang);
-      var menu_item = $('#syntax_menu .item[syntax="'+lang+'"]');
-      if (menu_item) menu_item.click();
-    }
-    syntax.set = function(lang)
-    {
-      syntax.val = lang;
-      session.setMode("ace/mode/"+lang);
-      if(!get_url_parameter('demo'))
-        Cookies.set('astnote-code-syntax',lang,{ expires: 10, path:window.location.pathname});
-    }
-    syntax.get_ext = function()
-    {
-      var menu_item = $('#syntax_menu .item[syntax="'+syntax.val+'"]');
-      if (menu_item && menu_item.attr('ext')) return menu_item.attr('ext');
-      return syntax.val;
-    }
-    warpmode = function(value)
-    {
-      if (value != undefined)
-      {
-        warpmode.warp = value;
-        session.setUseWrapMode(warpmode.warp);
-        $('#text_warp_toggle').text(warpmode.warp?'Warp:On':'Warp:Off');
-      }
-      return warpmode.warp;
-    }
-    warpmode.toggle = function(){
-      warpmode(!warpmode.warp);
-    }
-    $(function(){
-      $('#syntax_menu .item').on('click',function(){syntax.set($(this).attr('syntax'))});
-      $('#theme_menu .item').on('click',function(){theme.set($(this).attr('theme'))});
-    });
-  </script>
-  <script>
-    function resize_pad(){
-      var height = $(window).height() - ($('#menu_bar').height()||0) - ($('.firepad-toolbar').height() || 0) - 8;
-      $('#firepad').css('height',height).css('max-height',height);
-    }
-    function update_username(userName)
-    {
-      Cookies.set('astnote-user-name',userName,{ expires: 90, path:'{{root}}/'});
-    }
-    function update_color(userName)
-    {
-      Cookies.set('astnote-user-color',userName,{ expires: 90, path:'{{root}}/'});
-    }
-  </script>
   <script>
     var save = function(filename){};
     var get_file_name = function(ext)
     {
       ext = ext || 'txt';
       return 'astnote-{{name}}-'+(new Date()).toISOString().replace(/:|T/g,'-')+'.'+ext;
+    }
+    function resize_pad(){
+      var height = $(window).height() - ($('#menu_bar').height()||0) - 8;
+      $('#editor').css('height',height).css('max-height',height);
+      $('#firepad .firepad').css('height',height - ($('.firepad-toolbar').height()||0) - 2);
+    }
+    function get_user_id()
+    {
+      var userId = Cookies.get('astnote-user-id');
+      if (!userId || get_url_parameter('new_user'))
+      {
+        userId = Math.floor(Math.random() * 9999999999).toString();
+        Cookies.set('astnote-user-id',userId,{ expires: 90, path:'{{root}}/'});
+      }
+      return userId;
     }
     $(window).bind('keydown', function(event) {
       if (event.ctrlKey || event.metaKey)
@@ -199,7 +111,7 @@
   </script>
   <script>
     $('.ui.dropdown').dropdown();
-    $('#histoy_dropdown').addClass('top right pointing');
+    $('[name=histoy_dropdown]').addClass('top right pointing');
     $('.ui.sidebar').sidebar({dimPage:false,closable:false});
     if(get_url_parameter('bar') == 'hidden') $('#menu_bar').hide();
     if(get_url_parameter('back') == 'hidden') $('#back_button').hide();
@@ -209,41 +121,18 @@
     var fireurl = '{{firebase}}/astnote/{{mode}}/{{name}}';
     var firepadRef = new Firebase(fireurl);
     var firepad = undefined;
-    var userId = Cookies.get('astnote-user-id');
-    var userName = Cookies.get('astnote-user-name');
-    var userColor = Cookies.get('astnote-user-color');
-    var force_new_user = get_url_parameter('user') == 'new';
-    if (!userId || force_new_user)
-    {
-      userId = Math.floor(Math.random() * 9999999999).toString();
-      Cookies.set('astnote-user-id',userId,{ expires: 90, path:'{{root}}/'});
-    }
-    if (!userName || force_new_user)
-    {
-      userName = 'Guset ' + Math.floor(Math.random() * 999).toString();
-      update_username(userName);
-    }
-    if (!userColor || force_new_user)
-    {
-      userColor = ramdom_hsv();
-      update_color(userColor);
-    }
+    var userId = get_user_id();
+    if (init_userlist) init_userlist(userId);
 
     /// ---- Modes ---- ///
     if ('{{mode}}' == 'c')
     {
-      //code
-      var editor = ace.edit("firepad");
-      var session = editor.getSession();
-      warpmode(true);
-      session.setUseWorker(false);
-      var firepad = Firepad.fromACE(firepadRef, editor);
-      theme.load();
-      syntax.load();
+      //Editor Init
+      firepad = coder.init();
       save = function(filename){
-        filename = filename || get_file_name(syntax.get_ext());
+        filename = filename || get_file_name(coder.syntax.get_ext());
         download(filename,firepad.getText());
-      }
+      };
     }
     else if ('{{mode}}' == 'r')
     {
@@ -268,13 +157,9 @@
       }
     }
 
-    var firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'),
-        document.getElementById('userlist'), userId, userName, userColor);
-
     if(get_url_parameter('demo'))
     {
       $('#back_button').hide();
-      $('#share_button').hide();
       $('#historys').hide();
     }
     else
@@ -289,16 +174,6 @@
           room_history.splice(room_index, 1);
       room_history.push(room_url);
       access_cookies('history',room_history);
-
-      var clipboard = new Clipboard('#share_button');
-      $('#share_button').attr('data-clipboard-text',window.location.origin + window.location.pathname);
-      clipboard.on('success', function(e) {
-        var orginal_content = $('#share_button').html();
-        $('#share_button').text('Url Copied!').addClass('highlight');
-        setTimeout(function() {
-          $('#share_button').html(orginal_content).removeClass('highlight');
-        },2000);
-      });
     }
   </script>
 {% end %}

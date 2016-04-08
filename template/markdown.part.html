@@ -1,0 +1,60 @@
+<div class="unit" style="cursor:pointer;" onclick="markdown.toggle_preview()" id="md_preview_btn">
+Hide Preview
+</div>
+<script>
+marked.setOptions({
+  highlight: function(code) {
+    return hljs.highlightAuto(code).value;
+  }
+});
+
+var markdown = {};
+markdown.toggle_preview = function(val) {
+  if (val == undefined)
+    val = !$('#editor').hasClass('preview');
+  if (val)
+  {
+    $('#editor').addClass('preview');
+    $('#md_preview_btn').text('Hide Preview');
+  }
+  else
+  {
+    $('#editor').removeClass('preview');
+    $('#md_preview_btn').text('Show Preview');
+  }
+}
+markdown.update = function()
+{
+  $('#mark_preview .markdown-body').html(marked(firepad.getText()));
+}
+markdown.save = function(filename)
+{
+  filename = filename || get_file_name('.html');
+  var html_data = '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Astnote Markdown Save</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/github-markdown-css/2.2.1/github-markdown.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/></head><body><div class="markdown-body" style="margin:2em;">'+marked(firepad.getText()) + '</div></body></html>';
+  download(filename,html_data);
+}
+function scroll_sync (a,b) {
+  var scrolling = false;
+  function scroll_bind(source,target)
+  {
+    source.on('scroll', function() {
+      if (!scrolling)
+      {
+        scrolling = true;
+        target.scrollTop(source.scrollTop() / source.prop("scrollHeight") * target.prop("scrollHeight"));
+        setTimeout(function() {scrolling = false; }, 40);
+      }
+      return true;
+    });
+  }
+  scroll_bind(a,b);
+  scroll_bind(b,a);
+}
+
+$(function() {
+  firepad.on('synced', markdown.update);
+  firepad.on('ready', markdown.update);
+
+  scroll_sync($('#firepad .CodeMirror-vscrollbar'),$('#mark_preview'));
+});
+</script>

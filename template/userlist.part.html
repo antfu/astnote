@@ -1,0 +1,43 @@
+<div style="cursor:pointer;color:#fff;margin:0.8em 1em;opacity:0.8;"
+  id="share_button">
+  <i class="icon share alternate"></i> Edit with friends
+</div>
+<div id="userlist"></div>
+<script>
+function update_username(userName)
+{
+  Cookies.set('astnote-user-name',userName,{ expires: 90, path:'{{root}}/'});
+}
+function update_usercolor(color)
+{
+  Cookies.set('astnote-user-color',color,{ expires: 90, path:'{{root}}/'});
+}
+function init_userlist(userId)
+{
+  var userName = Cookies.get('astnote-user-name');
+  var userColor = Cookies.get('astnote-user-color');
+  var force_new_user = get_url_parameter('new_user');
+  if (!userName || force_new_user)
+  {
+    userName = 'Guset ' + Math.floor(Math.random() * 999).toString();
+    update_username(userName);
+  }
+  if (!userColor || force_new_user)
+  {
+    userColor = ramdom_hsv();
+    update_usercolor(userColor);
+  }
+  var firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'),
+    document.getElementById('userlist'), userId, userName, userColor);
+
+  var clipboard = new Clipboard('#share_button');
+  $('#share_button').attr('data-clipboard-text',window.location.origin + window.location.pathname);
+  clipboard.on('success', function(e) {
+    var orginal_content = $('#share_button').html();
+    $('#share_button').html('<i class="icon checkmark"></i> Url Copied!').addClass('highlight');
+    setTimeout(function() {
+      $('#share_button').html(orginal_content).removeClass('highlight');
+    },2000);
+  });
+}
+</script>

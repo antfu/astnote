@@ -1,0 +1,81 @@
+a.light
+{
+  color:#000;
+  opacity: 0.4;
+  transition: opacity 0.5s ease;
+}
+a.light:hover
+{
+  opacity: 0.8;
+}
+a.very.light
+{
+  opacity: 0.2;
+}
+a.very.light:hover
+{
+  opacity: 0.4;
+}
+/*-----Markdown-----*/
+#editor #mark_preview
+{
+    display: none;
+    height: 100%;
+    overflow: auto;
+}
+#editor #firepad
+{
+    height: 100%;
+    overflow: auto;
+}
+#editor.markdown #firepad .CodeMirror
+{
+    background-color: #f6f6f6;
+    padding: 0 20px 20px 20px;
+    font-size: 14px;
+    font-family: 'Monaco', courier, monospace;
+}
+
+#editor.markdown.preview #mark_preview
+{
+    display: inline-block;
+    width: 49.5%;
+    vertical-align: top;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 20px;
+}
+#editor.markdown #mark_preview .button
+{
+    opacity: 0.6;
+    cursor:pointer;
+    margin-left: 1em;
+    float: right;
+    display: inline-block;
+}
+#editor.markdown #mark_preview .button:hover
+{
+    opacity: 1;
+}
+#editor.markdown.preview #firepad
+{
+    width:50%;
+    display:inline-block;
+}
+#editor.markdown.preview #firepad .CodeMirror
+{
+    background-color: #f6f6f6;
+}
+
+@media screen and (max-width: 600px) {
+    #editor.markdown.preview #mark_preview
+    {
+        display: block;
+        width: 100%;
+    }
+    #editor.markdown.preview #firepad
+    {
+        display:none;
+    }
+}

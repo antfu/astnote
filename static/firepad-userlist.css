@@ -22,7 +22,7 @@ body { margin: 0; height: 100%;}
   position: absolute;
   left: 15px;
   right: 15px;
-  top: 38px;
+  top: 70px;
   bottom: 10px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -100,7 +100,7 @@ input.firepad-userlist-name-input {
 .menu.bar.dark
 {
   background:#111;
-  border-bottom: 1px solid #999;
+  border-bottom: 1px solid rgba(125,125,125,0.5);
 }
 
 .menu.bar.dark .unit

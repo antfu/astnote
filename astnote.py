@@ -40,18 +40,10 @@ class create_handler(base_handler):
         authcode = get_authcode(mode,name)
         self.redirect(configs.root+'/{mode}/{name}/{auth}'.format(mode=mode,name=name,auth=authcode))
 
-class text_editors_handler(base_handler):
+class editors_handler(base_handler):
     def get(self,mode,name,authcode):
         if authcode == get_authcode(mode,name):
             self.render('editor.html',mode=mode,name=name)
-        else:
-            self.render('error.html',error_code='Auth Failed',error_display='Maybe you got a wrong url.')
-
-
-class code_editors_handler(base_handler):
-    def get(self,name,authcode):
-        if authcode == get_authcode('c',name):
-            self.render('editor.html',mode='c',name=name)
         else:
             self.render('error.html',error_code='Auth Failed',error_display='Maybe you got a wrong url.')
 
@@ -65,10 +57,9 @@ tornado.options.parse_command_line()
 app = tornado.web.Application(
     handlers=[
         (r'/',index_handler),
-        (r'/random/(r|t|c)',random_handler),
-        (r'/ant/(r|t|c)/(\w+)',create_handler),
-        (r'/(r|t)/(\w+)/(\w+)',text_editors_handler),
-        (r'/c/(\w+)/(\w+)',code_editors_handler),
+        (r'/random/(r|t|c|m)',random_handler),
+        (r'/ant/(r|t|c|m)/(\w+)',create_handler),
+        (r'/(r|t|c|m)/(\w+)/(\w+)',editors_handler),
         (r'.*',not_found_handler)
     ],
     template_path='template',

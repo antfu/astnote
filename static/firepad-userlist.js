@@ -93,8 +93,9 @@ var FirepadUserList = (function() {
 
     on(colorDiv, 'click', function(e){
       var new_color = ramdom_hsv();
+      myUserRef.child('color').onDisconnect().remove();
       myUserRef.child('color').set(new_color);
-      update_color(new_color);
+      update_usercolor(new_color);
       stopEvent(e);
     });
 
