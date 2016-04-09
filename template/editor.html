@@ -38,9 +38,9 @@
         <a href="{{root}}/" class="unit highlight" style="cursor:pointer;" id="back_button" data-content="Back to Astnote homepage" data-variation="tiny basic">
           <i class="left arrow icon"></i>
         </a>
-        <div class="highlight unit" id="historys" data-content="Historys" data-variation="tiny basic">
+        <div class="inline" id="historys">
           <div class="ui dropdown transition hidden" name="histoy_dropdown">
-            <i class="history icon"></i>
+            <i style="opacity:0.7" class="history icon"></i>
             <div class="menu">
             </div>
           </div>
@@ -108,8 +108,7 @@
     });
   </script>
   <script>
-    $('.ui.dropdown').dropdown();
-    $('[name=histoy_dropdown]').addClass('top right pointing');
+    $('[name=histoy_dropdown]').addClass('top left pointing');
     $('.ui.sidebar').sidebar({dimPage:false,closable:false});
     if(get_url_parameter('bar') == 'hidden') $('#menu_bar').hide();
     if(get_url_parameter('back') == 'hidden') $('#back_button').hide();
