@@ -1,21 +1,59 @@
-a.light
+.menu.bar
+{
+  z-index: 100000;
+  padding-bottom:0.5em;
+  border-bottom: 1px solid #c9c9c9;
+  background:#fff
+}
+
+.unit
 {
   color:#000;
-  opacity: 0.4;
-  transition: opacity 0.5s ease;
+  opacity: 0.5;
+  transition: opacity 0.2s ease-in-out;
 }
-a.light:hover
+.menu.bar .unit
+{
+  display:inline-block;
+  margin:0.5em 0 0 1em;
+}
+.unit:hover
 {
   opacity: 0.8;
 }
-a.very.light
+.unit.highlight
+{
+  opacity: 0.6;
+}
+.unit.highlight:hover
+{
+  opacity: 1;
+}
+.unit.shallow
 {
   opacity: 0.2;
 }
-a.very.light:hover
+.unit.shallow:hover
 {
-  opacity: 0.4;
+  opacity: 0.5;
 }
+
+.menu.bar.dark
+{
+  background:#111;
+  border-bottom: 1px solid rgba(125,125,125,0.5);
+}
+
+.dark .unit, .unit.dark
+{
+  color:#fff;
+}
+
+i.image.icon:before
+{
+  content: "\f03e"
+}
+
 /*-----Markdown-----*/
 #editor #mark_preview
 {

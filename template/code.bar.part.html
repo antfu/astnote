@@ -1,5 +1,6 @@
 <div class="unit">
   <div class="ui top left pointing dropdown highlight">
+    <i class="icon code"></i>
     <div class="text">Syntax</div>
     <i class="dropdown icon"></i>
     <div class="menu" id="syntax_menu">
@@ -23,7 +24,8 @@
 </div>
 <div class="unit">
   <div class="ui top left pointing dropdown highlight">
-    <div class="text">Theme</div>
+    <i class="icon theme"></i>
+    <div class="text"></div>
     <i class="dropdown icon"></i>
     <div class="menu" id="theme_menu">
       <div class="item" theme="monokai" theme-style="dark">Monokai</div>
@@ -113,7 +115,7 @@
     {
       coder.warpmode.warp = value;
       coder.session.setUseWrapMode(coder.warpmode.warp);
-      $('#text_warp_toggle').text(coder.warpmode.warp?'Warp:On':'Warp:Off');
+      $('#text_warp_toggle').html(coder.warpmode.warp?'Warp on':'Warp off');
     }
     return coder.warpmode.warp;
   }

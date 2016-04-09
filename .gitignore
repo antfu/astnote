@@ -4,3 +4,5 @@ __pycache__/
 *.log
 config_override.py
 nohup.out
+*.min.js
+*.min.css

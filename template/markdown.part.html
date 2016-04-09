@@ -1,5 +1,4 @@
-<div class="unit" style="cursor:pointer;" onclick="markdown.toggle_preview()" id="md_preview_btn">
-Hide Preview
+<div class="unit highlight" style="cursor:pointer;" onclick="markdown.toggle_preview()" id="md_preview_btn" data-variation="tiny basic">
 </div>
 <script>
 marked.setOptions({
@@ -15,12 +14,12 @@ markdown.toggle_preview = function(val) {
   if (val)
   {
     $('#editor').addClass('preview');
-    $('#md_preview_btn').text('Hide Preview');
+    $('#md_preview_btn').html('<i class="icon hide"></i>').attr('data-content','Hide markdown preview').popup();
   }
   else
   {
     $('#editor').removeClass('preview');
-    $('#md_preview_btn').text('Show Preview');
+    $('#md_preview_btn').html('<i class="icon unhide"></i>').attr('data-content','Show markdown preview').popup();
   }
 }
 markdown.update = function()
@@ -55,6 +54,7 @@ $(function() {
   firepad.on('synced', markdown.update);
   firepad.on('ready', markdown.update);
 
+  markdown.toggle_preview(true);
   scroll_sync($('#firepad .CodeMirror-vscrollbar'),$('#mark_preview'));
 });
 </script>

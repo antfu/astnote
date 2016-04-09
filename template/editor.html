@@ -23,11 +23,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/>
   {% end %}
 
-  <script src="{{root}}{{ static_url("firepad.min.js") }}"></script>
-
-  <script src="{{root}}{{ static_url("firepad-userlist.js") }}"></script>
-  <link rel="stylesheet" href="{{root}}{{ static_url("firepad-userlist.css") }}" />
-  <link rel="stylesheet" href="{{root}}{{ static_url("firepad.css") }}" />
+  <script src="{{root}}/static/firepad.{{min}}js"></script>
+  <script src="{{root}}/static/firepad-userlist.{{min}}js"></script>
+  <link rel="stylesheet" href="{{root}}/static/firepad.{{min}}css" />
+  <link rel="stylesheet" href="{{root}}/static/firepad-userlist.{{min}}css" />
 {% end %}
 
 {% block content %}
@@ -36,22 +35,21 @@
   </div>
   <div class="pusher" style="height: 100%;overflow:hidden;">
     <div class="menu bar" id="menu_bar">
-        <div class="highlight unit" style="margin:0.5em 1em 0 1em!important;float:right;" id="historys">
+        <a href="{{root}}/" class="unit highlight" style="cursor:pointer;" id="back_button" data-content="Back to Astnote homepage" data-variation="tiny basic">
+          <i class="left arrow icon"></i>
+        </a>
+        <div class="highlight unit" id="historys" data-content="Historys" data-variation="tiny basic">
           <div class="ui dropdown transition hidden" name="histoy_dropdown">
-            <div class="text">Recent</div>
-            <i class="dropdown icon"></i>
-            <div class="icon menu">
+            <i class="history icon"></i>
+            <div class="menu">
             </div>
           </div>
           {% include historys.part.html %}
         </div>
-        <a href="{{root}}/" class="unit highlight" style="cursor:pointer;" id="back_button">
-          <i class="left arrow icon"></i>
-        </a>
-        <div onclick="$('.ui.sidebar').sidebar('toggle');" class="unit highlight" style="cursor:pointer;">
-          <i class="users icon"></i>
+        <div onclick="$('.ui.sidebar').sidebar('toggle');" class="unit highlight" style="cursor:pointer;" data-content="Cooperation" data-variation="tiny basic">
+          <i class="exchange icon"></i>
         </div>
-        <div class="unit highlight" style="cursor:pointer;" onclick="save()">
+        <div class="unit highlight" style="cursor:pointer;" onclick="save()" data-content="Save to file" data-variation="tiny basic">
           <i class="cloud download icon"></i>
         </div>
         {% if mode == 'c' %}
@@ -60,7 +58,7 @@
           {% include markdown.part.html %}
         {% end %}
     </div>
-    <div id="editor" style="position:relative;" class="{{'preview markdown' if mode == 'm' else ''}}">
+    <div id="editor" style="position:relative;" class="{{'markdown' if mode == 'm' else ''}}">
       <div id="firepad"></div>
       {% if mode == 'm' %}
         <div id="mark_preview">
@@ -175,5 +173,9 @@
       room_history.push(room_url);
       access_cookies('history',room_history);
     }
+
+    $(function() {
+      $('[data-content]').popup();
+    })
   </script>
 {% end %}
