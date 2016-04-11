@@ -1,6 +1,3 @@
-<div style="cursor:pointer;margin:0.8em 1em;" class="unit dark" id="share_button">
-  <i class="icon share alternate"></i> Edit with friends
-</div>
 <div id="userlist"></div>
 <script>
 function update_username(userName)
@@ -18,8 +15,7 @@ function init_userlist(userId)
   var force_new_user = get_url_parameter('new_user');
   if (!userName || force_new_user)
   {
-    userName = 'Guset ' + Math.floor(Math.random() * 999).toString();
-    update_username(userName);
+    userName = undefined;
   }
   if (!userColor || force_new_user)
   {
@@ -30,7 +26,6 @@ function init_userlist(userId)
     document.getElementById('userlist'), userId, userName, userColor);
 
   var clipboard = new Clipboard('#share_button');
-  $('#share_button').attr('data-clipboard-text',window.location.origin + window.location.pathname);
   clipboard.on('success', function(e) {
     var orginal_content = $('#share_button').html();
     $('#share_button').html('<i class="icon checkmark"></i> Url Copied!').addClass('highlight');

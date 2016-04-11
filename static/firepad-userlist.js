@@ -11,20 +11,16 @@ var FirepadUserList = (function() {
 
     var self = this;
     this.hasName_ = !!displayName;
-    this.displayName_ = displayName || 'Guest ' + Math.floor(Math.random() * 1000);
+    this.displayName_ = displayName || 'Guest';
     this.color_ = userColor || ramdom_hsv();
     this.firebaseOn_(ref.root().child('.info/connected'), 'value', function(s) {
       if (s.val() === true && self.displayName_) {
-        var nameref = ref.child(self.userId_).child('name');
-        nameref.onDisconnect().remove();
-        nameref.set(self.displayName_);
-        var colorref = ref.child(self.userId_).child('color');
-        colorref.onDisconnect().remove();
-        colorref.set(self.color_);
+        ref.child(self.userId_).child('name').set(self.displayName_);
+        ref.child(self.userId_).child('color').set(self.color_);
       }
     });
 
-    this.userList_ = this.makeUserList_()
+    this.userList_ = this.makeUserList_();
     place.appendChild(this.userList_);
   }
 
@@ -33,19 +29,21 @@ var FirepadUserList = (function() {
 
   FirepadUserList.prototype.dispose = function() {
     this.removeFirebaseCallbacks_();
-    this.ref_.child(this.userId_).child('name').remove();
-
     this.place_.removeChild(this.userList_);
   };
 
   FirepadUserList.prototype.makeUserList_ = function() {
     return elt('div', [
-      this.makeHeading_(),
-      elt('div', [
-        this.makeUserEntryForSelf_(),
-        this.makeUserEntriesForOthers_()
-      ], {'class': 'firepad-userlist-users' })
+      this.makeShare_(),
+      this.makeUserEntryForSelf_(),
+      this.makeUserEntriesForOthers_()
     ], {'class': 'firepad-userlist' });
+  };
+
+  FirepadUserList.prototype.makeShare_ = function() {
+    return elt('div',
+               [elt('i',[],{'class':'icon share alternate'}),elt('span',' Invite')],
+               {'class': 'unit dark firepad-userlist-invite','id': 'share_button','data-clipboard-text':(window.location.origin+window.location.pathname)});
   };
 
   FirepadUserList.prototype.makeHeading_ = function() {
@@ -64,7 +62,7 @@ var FirepadUserList = (function() {
   FirepadUserList.prototype.makeUserEntryForSelf_ = function() {
     var myUserRef = this.ref_.child(this.userId_);
 
-    var colorDiv = elt('div', null, { 'class': 'firepad-userlist-color-indicator' });
+    var colorDiv = elt('div', null, { 'class': 'firepad-userlist-color-indicator self'});
     this.firebaseOn_(myUserRef.child('color'), 'value', function(colorSnapshot) {
       var color = colorSnapshot.val();
       if (isValidColor(color)) {
@@ -72,19 +70,17 @@ var FirepadUserList = (function() {
       }
     });
 
-    var nameInput = elt('input', null, { type: 'text', 'class': 'firepad-userlist-name-input'} );
-    nameInput.value = this.displayName_;
-
-    var nameHint = elt('div', 'ENTER YOUR NAME', { 'class': 'firepad-userlist-name-hint'} );
-    if (this.hasName_) nameHint.style.display = 'none';
+    var nameInput = elt('input', null, { type: 'text', 'class': 'firepad-userlist-name-input','maxlength':'20','placeholder':"Your name"} );
+    if (this.hasName_)
+      nameInput.value = this.displayName_;
+    else
+      nameInput.value = '';
 
     // Update Firebase when name changes.
     var self = this;
     on(nameInput, 'change', function(e) {
-      var name = nameInput.value || "Guest " + Math.floor(Math.random() * 1000);
-      myUserRef.child('name').onDisconnect().remove();
+      var name = nameInput.value || "Guest";
       myUserRef.child('name').set(name);
-      nameHint.style.display = 'none';
       nameInput.blur();
       self.displayName_ = name;
       update_username(name);
@@ -93,22 +89,19 @@ var FirepadUserList = (function() {
 
     on(colorDiv, 'click', function(e){
       var new_color = ramdom_hsv();
-      myUserRef.child('color').onDisconnect().remove();
       myUserRef.child('color').set(new_color);
       update_usercolor(new_color);
       stopEvent(e);
     });
 
-    var nameDiv = elt('div', [nameInput, nameHint]);
-
-    return elt('div', [ colorDiv, nameDiv ], {
+    return elt('div', [ colorDiv, nameInput ], {
       'class': 'firepad-userlist-user ' + 'firepad-user-' + this.userId_
     });
   };
 
   FirepadUserList.prototype.makeUserEntriesForOthers_ = function() {
     var self = this;
-    var userList = elt('div');
+    var userList = elt('span');
     var userId2Element = { };
 
     function updateChild(userSnapshot, prevChildName) {

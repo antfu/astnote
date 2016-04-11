@@ -19,12 +19,21 @@ function hex2rgba(hex,alpha){
     }
     throw new Error('Bad Hex');
 }
+function get_random_name(len)
+{
+  if (len == undefined) len = 16;
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  for( var i=0; i < len; i++ )
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  return text;
+}
 function get_cursor_css(clazz,color,name,codeMirror)
 {
   css = ["."+clazz + "{"+(codeMirror?"position: relative;":"position:absolute;")+"background-color:"+ hex2rgba(color,0.3) + ";}\n",
-         "."+clazz+":last-child{border-right: 0.2em solid " + color + ";margin-right:-0.2em;}\n"]
+         "."+clazz+":last-child{border-right: 0.2em solid " + color + ";margin-right:-0.1em;margin-left:-0.1em;}\n"]
   if (name)
-    css.push((codeMirror?".CodeMirror-line ":"")+"."+clazz+':last-child:after{content:"'+name+'";position:absolute;z-index:100000;color:#111;background:'+color+';top:-1.2em;margin-left:-0.1em;border-radius:0.3em;font-size:0.8em;padding:0.15em 0.3em;}');
+    css.push((codeMirror?".CodeMirror-line ":"")+"."+clazz+':last-child:after{content:"'+name+'";position:absolute;color:#111;background:'+color+';top:-1.2em;margin-left:-0.1em;border-radius:0.3em;font-size:0.8em;padding:0.1em 0.4em;white-space:nowrap;}');
   return css;
 }
 
@@ -2640,7 +2649,7 @@ firepad.ACEAdapter = (function() {
       _ref = [end, start], start = _ref[0], end = _ref[1];
     }
     justCursor = cursor.position === cursor.selectionEnd;
-    clazz = (justCursor?'cursor':'selection')+ '-' + clientId + '-' + color.replace('#', '');
+    clazz = get_random_name();
     $.each(get_cursor_css(clazz,color,(justCursor?name:undefined)),function(i,css){_this.addStyleRule(css);});
     this.otherCursors[clientId] = cursorRange = new this.aceRange(start.row, start.column, end.row, end.column);
     self = this;
@@ -4294,16 +4303,16 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       return;
     }
 
+    var clazz = get_random_name();
     if (cursor.position === cursor.selectionEnd) {
       // show cursor
       var cursorCoords = this.cm.cursorCoords(cursorPos);
       var cursorEl = document.createElement('span');
-      cursorEl.className = 'cursor-' + userId + '-' + color.replace('#', '');
-      $.each(get_cursor_css(cursorEl.className,color,name,true),function(i,css){_this.addStyleRule(css);});
+      cursorEl.className = clazz;
+      $.each(get_cursor_css(clazz,color,name,true),function(i,css){_this.addStyleRule(css);});
       return this.cm.setBookmark(cursorPos, { widget: cursorEl, insertLeft: true });
     } else {
       // show selection
-      var clazz = 'selection-' + userId + '-' + color.replace('#', '');
       $.each(get_cursor_css(clazz,color,undefined,true),function(i,css){_this.addStyleRule(css);});
 
       var fromPos, toPos;

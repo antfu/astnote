@@ -1,78 +1,78 @@
 html { height: 100%; }
 body { margin: 0; height: 100%;}
-.firepad-userlist {
-  /* default height */
-  min-width: 20em;
-  color: #fff;
-}
 
 .firepad-userlist {
+  /* default height */
+  vertical-align: middle;
+  color: #fff;
   text-align: left;
   font-family: 'Helvetica Neue', sans-serif;
-  line-height: normal;
+}
+
+.firepad-userlist-invite
+{
+  display: inline-block;
+  cursor:pointer;
+  margin:0.8em 1em;
 }
 
 .firepad-userlist-heading {
+  display: inline-block;
   margin: 20px 15px 0;
   font-size: 12px;
   font-weight: bold;
 }
 
 .firepad-userlist-users {
-  position: absolute;
-  left: 15px;
-  right: 15px;
-  top: 70px;
-  bottom: 10px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: inline-block;
 }
 
 .firepad-userlist-user {
-  position: relative;
-  margin: 3px 0;
-  height: 32px;
-  padding-bottom: 5px;
+  display: inline-block;
+  padding: 0 0 0 1em;
+  vertical-align: middle;
 }
 
 .firepad-userlist-color-indicator {
   display: inline-block;
-  width: 32px;
-  height: 32px;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.1em;
   -webkit-border-radius: 10em;
   -moz-border-radius: 10em;
   border-radius: 10em;
+  vertical-align: middle;
+}
+
+.firepad-userlist-color-indicator.self
+{
+  cursor:pointer;
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: middle;
+  -webkit-border-radius: 0.3em;
+     -moz-border-radius: 0.3em;
+          border-radius: 0.3em;
 }
 
 input.firepad-userlist-name-input {
-  position: absolute;
-  left: 38px;
-  top: 0;
-  width: 105px;
-  height: 20px;
+  display: inline-block;
   border: 0;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-  font-size: 14px;
-  line-height: 14px;
-  padding: 1px;
-  background: none;
+  padding: 0.3em 0.5em;
+  width: 7em;
+  -webkit-border-radius: 0.3em;
+  -moz-border-radius: 0.3em;
+  border-radius: 0.3em;
+  background: rgba(255,255,255,0.1);
+  vertical-align: middle;
 }
 
 .firepad-userlist-name-hint {
-  position: absolute;
-  left: 38px;
-  top: 23px;
-  width: 300px; /* I'd rather it clip than wrap. */
-  font-size: 9px;
-  line-height: 11px;
+  display: inline-block;
 }
 
 .firepad-userlist-name {
-  position: absolute;
-  top: 2px;
-  left: 38px;
-  width: 95px;
-  font-size: 13px;
+  display: inline-block;
+  padding: 0.5em;
+  vertical-align: middle;
 }

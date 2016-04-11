@@ -30,12 +30,12 @@
 {% end %}
 
 {% block content %}
-  <div class="ui left vertical pushable sidebar" style="background: #111;">
+  <div class="ui top horizontal pushable sidebar" style="background: #111;">
     {% include userlist.part.html %}
   </div>
   <div class="pusher" style="height: 100%;overflow:hidden;">
     <div class="menu bar" id="menu_bar">
-        <a href="/" class="unit highlight" style="cursor:pointer;" id="back_button" data-content="Back to Astnote homepage" data-variation="tiny basic">
+        <a href="/" class="unit highlight" style="cursor:pointer;" id="back_button">
           <i class="left arrow icon"></i>
         </a>
         <div class="inline" id="historys">
@@ -46,10 +46,10 @@
           </div>
           {% include historys.part.html %}
         </div>
-        <div onclick="$('.ui.sidebar').sidebar('toggle');" class="unit highlight" style="cursor:pointer;" data-content="Cooperation" data-variation="tiny basic">
-          <i class="exchange icon"></i>
+        <div onclick="$('.ui.sidebar').sidebar('toggle');" class="unit highlight" style="cursor:pointer;">
+          <i class="users icon"></i>
         </div>
-        <div class="unit highlight" style="cursor:pointer;" onclick="save()" data-content="Save to file" data-variation="tiny basic">
+        <div class="unit highlight" style="cursor:pointer;" onclick="save()">
           <i class="cloud download icon"></i>
         </div>
         {% if mode == 'c' %}
@@ -109,7 +109,7 @@
   </script>
   <script>
     $('[name=histoy_dropdown]').addClass('top left pointing');
-    $('.ui.sidebar').sidebar({dimPage:false,closable:false});
+    $('.ui.sidebar').sidebar();
     if(get_url_parameter('bar') == 'hidden') $('#menu_bar').hide();
     if(get_url_parameter('back') == 'hidden') $('#back_button').hide();
     window.addEventListener('resize',resize_pad, true);
