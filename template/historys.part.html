@@ -15,7 +15,7 @@ function display_historys()
   if (room_history.length)
   {
       $.each(room_history,function(i,e){
-          menu.append('<div class="item" target="'+e+'">'+format_history(e,{{len(root)}})+'</div>');
+          menu.append('<div class="item" target="'+e+'">'+format_history(e,0)+'</div>');
       });
       $('[name=histoy_dropdown]')
         .removeClass('transition hidden')
