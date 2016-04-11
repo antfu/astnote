@@ -119,13 +119,14 @@
     var firepadRef = new Firebase(fireurl);
     var firepad = undefined;
     var userId = get_user_id();
-    if (init_userlist) init_userlist(userId);
+    if (init_userlist)
+      init_userlist(userId);
 
     /// ---- Modes ---- ///
     if ('{{mode}}' == 'c')
     {
       //Editor Init
-      firepad = coder.init();
+      firepad = coder.init(userId);
       save = function(filename){
         filename = filename || get_file_name(coder.syntax.get_ext());
         download(filename,firepad.getText());

@@ -46,7 +46,7 @@
   var coder = {};
   coder.theme = {};
   coder.syntax = {};
-  coder.init  = function () {
+  coder.init  = function (userId) {
     coder.editor = ace.edit("firepad");
     coder.session = coder.editor.getSession();
     coder.editor.$blockScrolling = Infinity;
@@ -54,7 +54,7 @@
     coder.session.setUseWorker(false);
     coder.theme.load();
     coder.syntax.load();
-    return Firepad.fromACE(firepadRef, coder.editor);
+    return Firepad.fromACE(firepadRef, coder.editor, {userId: userId});
   }
   coder.theme.load = function()
   {

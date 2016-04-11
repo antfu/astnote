@@ -6,6 +6,28 @@
 })('Firepad', function () {var firepad = firepad || { };
 firepad.utils = { };
 
+function hex2rgba(hex,alpha){
+    var c;
+    if (alpha === undefined) a = 1;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c= hex.substring(1).split('');
+        if(c.length== 3){
+            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c = '0x'+c.join('');
+        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+alpha+')';
+    }
+    throw new Error('Bad Hex');
+}
+function get_cursor_css(clazz,color,name,codeMirror)
+{
+  css = ["."+clazz + "{"+(codeMirror?"position: relative;":"position:absolute;")+"background-color:"+ hex2rgba(color,0.3) + ";}\n",
+         "."+clazz+":last-child{border-right: 0.2em solid " + color + ";margin-right:-0.2em;}\n"]
+  if (name)
+    css.push((codeMirror?".CodeMirror-line ":"")+"."+clazz+':last-child:after{content:"'+name+'";position:absolute;z-index:100000;color:#111;background:'+color+';top:-1.2em;margin-left:-0.1em;border-radius:0.3em;font-size:0.8em;padding:0.15em 0.3em;}');
+  return css;
+}
+
 firepad.utils.makeEventEmitter = function(clazz, opt_allowedEVents) {
   clazz.prototype.allowedEvents_ = opt_allowedEVents;
 
@@ -1380,7 +1402,6 @@ firepad.FirebaseAdapter = (function (global) {
 
     if (this.userRef_) {
       this.userRef_.child('cursor').remove();
-      this.userRef_.child('color').remove();
     }
 
     this.ref_ = null;
@@ -1394,8 +1415,6 @@ firepad.FirebaseAdapter = (function (global) {
       // (if a future user takes our old name).
       this.userRef_.child('cursor').remove();
       this.userRef_.child('cursor').onDisconnect().cancel();
-      this.userRef_.child('color').remove();
-      this.userRef_.child('color').onDisconnect().cancel();
     }
 
     this.userId_ = userId;
@@ -1485,7 +1504,6 @@ firepad.FirebaseAdapter = (function (global) {
 
   FirebaseAdapter.prototype.initializeUserData_ = function() {
     this.userRef_.child('cursor').onDisconnect().remove();
-    this.userRef_.child('color').onDisconnect().remove();
 
     this.sendCursor(this.cursor_ || null);
     this.setColor(this.color_ || null);
@@ -1497,7 +1515,7 @@ firepad.FirebaseAdapter = (function (global) {
     function childChanged(childSnap) {
       var userId = childSnap.key();
       var userData = childSnap.val();
-      self.trigger('cursor', userId, userData.cursor, userData.color);
+      self.trigger('cursor', userId, userData.cursor, userData.color, userData.name);
     }
 
     this.firebaseOn_(usersRef, 'child_added', childChanged);
@@ -2250,13 +2268,18 @@ firepad.EditorClient = (function () {
     this.color = color;
   };
 
+  OtherClient.prototype.setName = function (name) {
+    this.name = name;
+  };
+
   OtherClient.prototype.updateCursor = function (cursor) {
     this.removeCursor();
     this.cursor = cursor;
     this.mark = this.editorAdapter.setOtherCursor(
       cursor,
       this.color,
-      this.id
+      this.id,
+      this.name
     );
   };
 
@@ -2296,7 +2319,7 @@ firepad.EditorClient = (function () {
       operation: function (operation) {
         self.applyServer(operation);
       },
-      cursor: function (clientId, cursor, color) {
+      cursor: function (clientId, cursor, color, name) {
         if (self.serverAdapter.userId_ === clientId ||
             !(self.state instanceof Client.Synchronized)) {
           return;
@@ -2304,6 +2327,7 @@ firepad.EditorClient = (function () {
         var client = self.getClientObject(clientId);
         if (cursor) {
           if (color) client.setColor(color);
+          if (name)  client.setName(name);
           client.updateCursor(Cursor.fromJSON(cursor));
         } else {
           client.removeCursor();
@@ -2598,7 +2622,7 @@ firepad.ACEAdapter = (function() {
     return this.aceSession.selection.setSelectionRange(new this.aceRange(start.row, start.column, end.row, end.column));
   };
 
-  ACEAdapter.prototype.setOtherCursor = function(cursor, color, clientId) {
+  ACEAdapter.prototype.setOtherCursor = function(cursor, color, clientId, name) {
     var clazz, css, cursorRange, end, justCursor, self, start, _ref,
       _this = this;
     if (this.otherCursors == null) {
@@ -2615,13 +2639,9 @@ firepad.ACEAdapter = (function() {
     if (cursor.selectionEnd < cursor.position) {
       _ref = [end, start], start = _ref[0], end = _ref[1];
     }
-    clazz = "other-client-selection-" + (color.replace('#', ''));
     justCursor = cursor.position === cursor.selectionEnd;
-    if (justCursor) {
-      clazz = clazz.replace('selection', 'cursor');
-    }
-    css = "." + clazz + " {\n  position: absolute;\n  background-color: " + (justCursor ? 'transparent' : color) + ";\n  border-left: 2px solid " + color + ";\n}";
-    this.addStyleRule(css);
+    clazz = (justCursor?'cursor':'selection')+ '-' + clientId + '-' + color.replace('#', '');
+    $.each(get_cursor_css(clazz,color,(justCursor?name:undefined)),function(i,css){_this.addStyleRule(css);});
     this.otherCursors[clientId] = cursorRange = new this.aceRange(start.row, start.column, end.row, end.column);
     self = this;
     cursorRange.clipRows = function() {
@@ -2634,7 +2654,7 @@ firepad.ACEAdapter = (function() {
     };
     cursorRange.start = this.aceDoc.createAnchor(cursorRange.start);
     cursorRange.end = this.aceDoc.createAnchor(cursorRange.end);
-    cursorRange.id = this.aceSession.addMarker(cursorRange, clazz, "text");
+    cursorRange.id = this.aceSession.addMarker(cursorRange, clazz, "text", justCursor);
     return {
       clear: function() {
         cursorRange.start.detach();
@@ -4260,7 +4280,8 @@ firepad.RichTextCodeMirrorAdapter = (function () {
     return this.addedStyleSheet.insertRule(css, 0);
   };
 
-  RichTextCodeMirrorAdapter.prototype.setOtherCursor = function (cursor, color, clientId) {
+  RichTextCodeMirrorAdapter.prototype.setOtherCursor = function (cursor, color, clientId, name) {
+    var _this = this;
     var cursorPos = this.cm.posFromIndex(cursor.position);
     if (typeof color !== 'string' || !color.match(/^#[a-fA-F0-9]{3,6}$/)) {
       return;
@@ -4277,27 +4298,13 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       // show cursor
       var cursorCoords = this.cm.cursorCoords(cursorPos);
       var cursorEl = document.createElement('span');
-      cursorEl.className = 'other-client';
-      cursorEl.style.borderLeftWidth = '2px';
-      cursorEl.style.borderLeftStyle = 'solid';
-      cursorEl.style.borderLeftColor = color;
-      cursorEl.style.marginLeft = cursorEl.style.marginRight = '-1px';
-      cursorEl.style.height = (cursorCoords.bottom - cursorCoords.top) * 0.9 + 'px';
-      cursorEl.setAttribute('data-clientid', clientId);
-      cursorEl.style.zIndex = 0;
-
+      cursorEl.className = 'cursor-' + userId + '-' + color.replace('#', '');
+      $.each(get_cursor_css(cursorEl.className,color,name,true),function(i,css){_this.addStyleRule(css);});
       return this.cm.setBookmark(cursorPos, { widget: cursorEl, insertLeft: true });
     } else {
       // show selection
-      var selectionClassName = 'selection-' + color.replace('#', '');
-      var transparency = 0.4;
-      var rule = '.' + selectionClassName + ' {' +
-        // fallback for browsers w/out rgba (rgb w/ transparency)
-        ' background: ' + hex2rgb(color) + ';\n' +
-        // rule with alpha takes precedence if supported
-        ' background: ' + hex2rgb(color, transparency) + ';' +
-      '}';
-      this.addStyleRule(rule);
+      var clazz = 'selection-' + userId + '-' + color.replace('#', '');
+      $.each(get_cursor_css(clazz,color,undefined,true),function(i,css){_this.addStyleRule(css);});
 
       var fromPos, toPos;
       if (cursor.selectionEnd > cursor.position) {
@@ -4308,7 +4315,7 @@ firepad.RichTextCodeMirrorAdapter = (function () {
         toPos = cursorPos;
       }
       return this.cm.markText(fromPos, toPos, {
-        className: selectionClassName
+        className: clazz
       });
     }
   };

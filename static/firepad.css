@@ -197,17 +197,3 @@ a.firepad-btn:active {
   line-height: 1.2142em;
   padding: .67861429em 1em;
 }
-
-.others-cursor:after
-{
-  content: "2333";
-  position: absolute;
-  background: #112276;
-  top: -1em;
-  margin-left: -0.1em;
-  font-size: 0.8em;
-  padding: 0.15em 0.3em;
-  color: #fff;
-  border-radius: 0.3em;
-  opacity: 0.8;
-}
