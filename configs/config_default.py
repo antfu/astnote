@@ -7,7 +7,6 @@ Default configurations.
 
 configs = {
     'port' : 80,
-    'root' : '',
     'firebase' : '',
     'minify': True
 }

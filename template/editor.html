@@ -23,10 +23,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/>
   {% end %}
 
-  <script src="{{root}}/static/firepad.{{min}}js"></script>
-  <script src="{{root}}/static/firepad-userlist.{{min}}js"></script>
-  <link rel="stylesheet" href="{{root}}/static/firepad.{{min}}css" />
-  <link rel="stylesheet" href="{{root}}/static/firepad-userlist.{{min}}css" />
+  <script src="/static/firepad.js"></script>
+  <script src="/static/firepad-userlist.js"></script>
+  <link rel="stylesheet" href="/static/firepad.css" />
+  <link rel="stylesheet" href="/static/firepad-userlist.css" />
 {% end %}
 
 {% block content %}
@@ -35,7 +35,7 @@
   </div>
   <div class="pusher" style="height: 100%;overflow:hidden;">
     <div class="menu bar" id="menu_bar">
-        <a href="{{root}}/" class="unit highlight" style="cursor:pointer;" id="back_button" data-content="Back to Astnote homepage" data-variation="tiny basic">
+        <a href="/" class="unit highlight" style="cursor:pointer;" id="back_button" data-content="Back to Astnote homepage" data-variation="tiny basic">
           <i class="left arrow icon"></i>
         </a>
         <div class="inline" id="historys">
@@ -93,7 +93,7 @@
       if (!userId || get_url_parameter('new_user'))
       {
         userId = Math.floor(Math.random() * 9999999999).toString();
-        Cookies.set('astnote-user-id',userId,{ expires: 90, path:'{{root}}/'});
+        Cookies.set('astnote-user-id',userId,{ expires: 90, path:'/'});
       }
       return userId;
     }

@@ -11,7 +11,6 @@ import tornado.web
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
-import minifier
 from   configs.config   import configs
 
 def get_authcode(mode,name,amount=3):
@@ -21,9 +20,7 @@ class base_handler(tornado.web.RequestHandler):
     def get_template_namespace(self):
         ns = super(base_handler, self).get_template_namespace()
         ns.update({
-            'root': configs.root,
-            'firebase': configs.firebase,
-            'min': 'min.' if configs.minify else ''
+            'firebase': configs.firebase
         })
         return ns
 
@@ -35,12 +32,12 @@ class random_handler(base_handler):
     def get(self,mode):
         name = ''.join([random.choice(string.digits) for x in range(6)])
         authcode = get_authcode(mode,name)
-        self.redirect(configs.root+'/{mode}/{name}/{auth}'.format(mode=mode,name=name,auth=authcode))
+        self.redirect('/{mode}/{name}/{auth}'.format(mode=mode,name=name,auth=authcode))
 
 class create_handler(base_handler):
     def get(self,mode,name):
         authcode = get_authcode(mode,name)
-        self.redirect(configs.root+'/{mode}/{name}/{auth}'.format(mode=mode,name=name,auth=authcode))
+        self.redirect('/{mode}/{name}/{auth}'.format(mode=mode,name=name,auth=authcode))
 
 class editors_handler(base_handler):
     def get(self,mode,name,authcode):
@@ -63,8 +60,6 @@ def minify():
     print('Minify Finished')
 
 if __name__ == '__main__':
-    if configs.minify:
-        minify()
     args = sys.argv
     args.append("--log_file_prefix=logs/web.log")
     tornado.options.parse_command_line()
