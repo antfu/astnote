@@ -12,6 +12,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 from   configs.config   import configs
+import minifier
 
 def get_authcode(mode,name,amount=3):
     return str(int(hashlib.md5((mode + ':' + name + ':ant').encode()).hexdigest(),16))[-amount:]
@@ -60,6 +61,7 @@ def minify():
     print('Minify Finished')
 
 if __name__ == '__main__':
+    minifier.minify('static/firepad.js')
     args = sys.argv
     args.append("--log_file_prefix=logs/web.log")
     tornado.options.parse_command_line()

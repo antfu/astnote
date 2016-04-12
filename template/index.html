@@ -2,6 +2,10 @@
 
 {% block title %}Index{% end %}
 
+{% block meta %}
+<script src="/static/editor.js"></script>
+{% end %}
+
 {% block content %}
 <div class="ui main container" style="margin-top: 3em;">
   <h1 class="ui header">
@@ -17,7 +21,6 @@
     <div class="ui compact floating dropdown icon button" name="histoy_dropdown">
       <i class="dropdown icon"></i>
       <div class="menu"></div>
-      {% include historys.part.html %}
     </div>
   </div>
   <div class="ui compact teal dropdown button" style="margin-left:0.5em;margin-bottom:0.5em" id="create_btn">
@@ -50,16 +53,6 @@
   </div>
   <script>
     $('#create_btn, [name=histoy_dropdown]').dropdown();
-    var room_url = access_cookies('prev');
-    if (room_url)
-    {
-      $('#prev_room_button').attr('href',room_url).removeClass('transition hidden');
-      $('#prev_room_button span').text(format_history(room_url),''.length);
-    }
-    if (room_history)
-    {
-      $('#historys_button').removeClass('transition hidden');
-    }
     $('#demos .tabular.menu .item').tab({
       onFirstLoad:function(tabPath, parameterArray, historyEvent){
         var i = $('#demos iframe[parent-tab="'+tabPath+'"]');
@@ -71,7 +64,8 @@
         });
     }});
     $(function(){
-      $('#demos .tabular.menu .item[data-tab="rich"]').click();
+      if (historys.init()) $('#historys_button').removeClass('transition hidden');
+      setTimeout($('#demos .tabular.menu .item[data-tab="rich"]').click(),500);
     });
   </script>
   <style>
@@ -86,7 +80,7 @@
   #demos iframe
   {
     width:100%;
-    height:30em;
+    height:60em;
     border-width:0;
     resize:vertical;
     margin-bottom: -0.2em;

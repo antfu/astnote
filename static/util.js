@@ -34,12 +34,6 @@ function get_url_parameter(sParam) {
   }
 }
 
-function format_history(url,len_of_root)
-{
-  len_of_root = len_of_root || 0;
-  return url.slice(len_of_root+1,url.length-4)
-}
-
 function HSVtoRGB(h, s, v) {
     var r, g, b, i, f, p, q, t;
     if (arguments.length === 1) {

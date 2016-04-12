@@ -23,8 +23,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/>
   {% end %}
 
-  <script src="/static/firepad.js"></script>
+  <script src="/static/firepad.min.js"></script>
+  <link rel="stylesheet" href="/static/common.css" />
   <link rel="stylesheet" href="/static/firepad.css" />
+
+  <script src="/static/editor.js"></script>
 {% end %}
 
 {% block content %}
@@ -39,7 +42,6 @@
           <div class="menu">
           </div>
         </div>
-        {% include historys.part.html %}
       </div>
       <div class="unit highlight" style="cursor:pointer;" onclick="save()">
         <i class="cloud download icon"></i>
@@ -47,7 +49,8 @@
       {% if mode == 'c' %}
         {% include code.part.html %}
       {% elif mode == 'm' %}
-        {% include markdown.part.html %}
+        <div class="unit highlight" style="cursor:pointer;" onclick="markdown.toggle_preview()" id="md_preview_btn" data-variation="tiny basic">
+        </div>
       {% end %}
   </div>
   <div id="editor" style="position:relative;" class="{{'markdown' if mode == 'm' else ''}}">
@@ -96,11 +99,13 @@
     });
   </script>
   <script>
+    var mode = '{{mode}}';
     $('[name=histoy_dropdown]').addClass('top left pointing');
     if(get_url_parameter('bar') == 'hidden') $('#menu_bar').height(0).hide();
     if(get_url_parameter('back') == 'hidden') $('#back_button').hide();
     window.addEventListener('resize',resize_pad, true);
     $(resize_pad);
+    $(historys.init());
 
     var fireurl = '{{firebase}}/astnote/{{mode}}/{{name}}';
     var firepadRef = new Firebase(fireurl);
@@ -110,7 +115,7 @@
       init_userlist(userId);
 
     /// ---- Modes ---- ///
-    if ('{{mode}}' == 'c')
+    if (mode == 'c')
     {
       //Editor Init
       firepad = coder.init(userId);
@@ -119,7 +124,7 @@
         download(filename,firepad.getText());
       };
     }
-    else if ('{{mode}}' == 'r')
+    else if (mode == 'r')
     {
       //rich text
       var codeMirror = CodeMirror(document.getElementById('firepad'), { lineWrapping: true });
@@ -141,6 +146,7 @@
         download(filename,firepad.getText());
       }
     }
+    if (mode == 'm') markdown.init();
 
     if(get_url_parameter('demo'))
     {
@@ -148,17 +154,6 @@
       $('#historys').hide();
     }
     else
-    {
-      var room_url = window.location.pathname;
-      var room_history = access_cookies('history');
-      var is_new_room = true;
-      if (!room_history) room_history = [];
-      if (room_history.length >= 7) room_history.shift();
-      var room_index = room_history.indexOf(room_url);
-      if (room_index > -1)
-          room_history.splice(room_index, 1);
-      room_history.push(room_url);
-      access_cookies('history',room_history);
-    }
+      historys.renew();
   </script>
 {% end %}
