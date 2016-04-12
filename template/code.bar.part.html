@@ -72,9 +72,9 @@
     coder.theme.val = theme_code;
     var menu_item = $('#theme_menu .item[theme="'+theme_code+'"]');
     if (menu_item && menu_item.attr('theme-style') == 'dark')
-      $('#menu_bar').addClass('dark');
+      $('#screen').addClass('dark');
     else
-      $('#menu_bar').removeClass('dark');
+      $('#screen').removeClass('dark');
     coder.editor.setTheme("ace/theme/"+theme_code);
     if(!get_url_parameter('demo'))
       Cookies.set('astnote-code-theme',theme_code,{ expires: 90 });

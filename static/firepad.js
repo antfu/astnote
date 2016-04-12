@@ -17,7 +17,7 @@ function hex2rgba(hex,alpha){
         c = '0x'+c.join('');
         return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+alpha+')';
     }
-    throw new Error('Bad Hex');
+    throw new Error('Bad Hex ' + hex);
 }
 function get_random_name(len)
 {
@@ -1411,6 +1411,7 @@ firepad.FirebaseAdapter = (function (global) {
 
     if (this.userRef_) {
       this.userRef_.child('cursor').remove();
+      this.userRef_.child('color').remove();
     }
 
     this.ref_ = null;
@@ -1424,6 +1425,8 @@ firepad.FirebaseAdapter = (function (global) {
       // (if a future user takes our old name).
       this.userRef_.child('cursor').remove();
       this.userRef_.child('cursor').onDisconnect().cancel();
+      this.userRef_.child('color').remove();
+      this.userRef_.child('color').onDisconnect().cancel();
     }
 
     this.userId_ = userId;
@@ -1513,6 +1516,7 @@ firepad.FirebaseAdapter = (function (global) {
 
   FirebaseAdapter.prototype.initializeUserData_ = function() {
     this.userRef_.child('cursor').onDisconnect().remove();
+    this.userRef_.child('color').onDisconnect().remove();
 
     this.sendCursor(this.cursor_ || null);
     this.setColor(this.color_ || null);

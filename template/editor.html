@@ -30,49 +30,44 @@
 {% end %}
 
 {% block content %}
-  <div class="ui top horizontal pushable sidebar" style="background: #111;">
-    {% include userlist.part.html %}
-  </div>
-  <div class="pusher" style="height: 100%;overflow:hidden;">
-    <div class="menu bar" id="menu_bar">
-        <a href="/" class="unit highlight" style="cursor:pointer;" id="back_button">
-          <i class="left arrow icon"></i>
-        </a>
-        <div class="inline" id="historys">
-          <div class="ui dropdown transition hidden" name="histoy_dropdown">
-            <i style="opacity:0.7" class="history icon"></i>
-            <div class="menu">
-            </div>
+<div class="screen" id="screen">
+  <div class="menu bar" id="menu_bar">
+      <a href="/" class="unit highlight" style="cursor:pointer;" id="back_button">
+        <i class="left arrow icon"></i>
+      </a>
+      <div class="inline" id="historys">
+        <div class="ui dropdown transition hidden" name="histoy_dropdown">
+          <i style="opacity:0.7" class="history icon"></i>
+          <div class="menu">
           </div>
-          {% include historys.part.html %}
         </div>
-        <div onclick="$('.ui.sidebar').sidebar('toggle');" class="unit highlight" style="cursor:pointer;">
-          <i class="users icon"></i>
-        </div>
-        <div class="unit highlight" style="cursor:pointer;" onclick="save()">
-          <i class="cloud download icon"></i>
-        </div>
-        {% if mode == 'c' %}
-          {% include code.bar.part.html %}
-        {% elif mode == 'm' %}
-          {% include markdown.part.html %}
-        {% end %}
-    </div>
-    <div id="editor" style="position:relative;" class="{{'markdown' if mode == 'm' else ''}}">
-      <div id="firepad"></div>
-      {% if mode == 'm' %}
-        <div id="mark_preview">
-          <div class="button" onclick="markdown.save()">
-          Save as HTML
-          </div>
-          <div class="button" style="clear: left;" onclick="markdown.update()">
-          Refresh
-          </div>
-          <div class="markdown-body" style="margin-top:2em;"></div>
-        </div>
+        {% include historys.part.html %}
+      </div>
+      <div class="unit highlight" style="cursor:pointer;" onclick="save()">
+        <i class="cloud download icon"></i>
+      </div>
+      {% if mode == 'c' %}
+        {% include code.bar.part.html %}
+      {% elif mode == 'm' %}
+        {% include markdown.part.html %}
       {% end %}
-    </div>
   </div>
+  <div id="editor" style="position:relative;" class="{{'markdown' if mode == 'm' else ''}}">
+    <div id="firepad"></div>
+    {% if mode == 'm' %}
+      <div id="mark_preview">
+        <div class="button" onclick="markdown.save()">
+        Save as HTML
+        </div>
+        <div class="button" style="clear: left;" onclick="markdown.update()">
+        Refresh
+        </div>
+        <div class="markdown-body" style="margin-top:2em;"></div>
+      </div>
+    {% end %}
+  </div>
+  {% include userlist.part.html %}
+</div>
 {% end %}
 {% block scripts %}
   <script>
@@ -83,7 +78,7 @@
       return 'astnote-{{name}}-'+(new Date()).toISOString().replace(/:|T/g,'-')+'.'+ext;
     }
     function resize_pad(){
-      var height = $(window).height() - ($('#menu_bar').height()||0) - 8;
+      var height = $(window).height() - ($('#menu_bar').height()||0) - ($('#userlist').height()||0) - 6;
       $('#editor').css('height',height).css('max-height',height);
       $('#firepad .firepad').css('height',height - ($('.firepad-toolbar').height()||0) - 2);
     }
@@ -109,10 +104,10 @@
   </script>
   <script>
     $('[name=histoy_dropdown]').addClass('top left pointing');
-    $('.ui.sidebar').sidebar();
-    if(get_url_parameter('bar') == 'hidden') $('#menu_bar').hide();
+    if(get_url_parameter('bar') == 'hidden') $('#menu_bar').height(0).hide();
     if(get_url_parameter('back') == 'hidden') $('#back_button').hide();
     window.addEventListener('resize',resize_pad, true);
+    $(resize_pad);
 
     var fireurl = '{{firebase}}/astnote/{{mode}}/{{name}}';
     var firepadRef = new Firebase(fireurl);
@@ -175,7 +170,6 @@
 
     $(function() {
       $('[data-content]').popup();
-      $(resize_pad);
     })
   </script>
 {% end %}

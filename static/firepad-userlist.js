@@ -15,8 +15,12 @@ var FirepadUserList = (function() {
     this.color_ = userColor || ramdom_hsv();
     this.firebaseOn_(ref.root().child('.info/connected'), 'value', function(s) {
       if (s.val() === true && self.displayName_) {
-        ref.child(self.userId_).child('name').set(self.displayName_);
-        ref.child(self.userId_).child('color').set(self.color_);
+        var nameref = ref.child(self.userId_).child('name');
+        nameref.onDisconnect().remove();
+        nameref.set(self.displayName_);
+        var colorref = ref.child(self.userId_).child('color');
+        colorref.onDisconnect().remove();
+        colorref.set(self.color_);
       }
     });
 
@@ -43,7 +47,7 @@ var FirepadUserList = (function() {
   FirepadUserList.prototype.makeShare_ = function() {
     return elt('div',
                [elt('i',[],{'class':'icon share alternate'}),elt('span',' Invite')],
-               {'class': 'unit dark firepad-userlist-invite','id': 'share_button','data-clipboard-text':(window.location.origin+window.location.pathname)});
+               {'class': 'unit firepad-userlist-invite','id': 'share_button','data-clipboard-text':(window.location.origin+window.location.pathname)});
   };
 
   FirepadUserList.prototype.makeHeading_ = function() {
