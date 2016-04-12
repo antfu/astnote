@@ -24,9 +24,7 @@
   {% end %}
 
   <script src="/static/firepad.js"></script>
-  <script src="/static/firepad-userlist.js"></script>
   <link rel="stylesheet" href="/static/firepad.css" />
-  <link rel="stylesheet" href="/static/firepad-userlist.css" />
 {% end %}
 
 {% block content %}
@@ -47,7 +45,7 @@
         <i class="cloud download icon"></i>
       </div>
       {% if mode == 'c' %}
-        {% include code.bar.part.html %}
+        {% include code.part.html %}
       {% elif mode == 'm' %}
         {% include markdown.part.html %}
       {% end %}
@@ -72,11 +70,6 @@
 {% block scripts %}
   <script>
     var save = function(filename){};
-    var get_file_name = function(ext)
-    {
-      ext = ext || 'txt';
-      return 'astnote-{{name}}-'+(new Date()).toISOString().replace(/:|T/g,'-')+'.'+ext;
-    }
     function resize_pad(){
       var height = $(window).height() - ($('#menu_bar').height()||0) - ($('#userlist').height()||0) - 6;
       $('#editor').css('height',height).css('max-height',height);
@@ -167,9 +160,5 @@
       room_history.push(room_url);
       access_cookies('history',room_history);
     }
-
-    $(function() {
-      $('[data-content]').popup();
-    })
   </script>
 {% end %}

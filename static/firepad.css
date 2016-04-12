@@ -197,3 +197,103 @@ a.firepad-btn:active {
   line-height: 1.2142em;
   padding: .67861429em 1em;
 }
+
+html { height: 100%; }
+body { margin: 0; height: 100%;}
+
+.userlistbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  color: #111;
+  border-top: 1px solid #c9c9c9;
+}
+
+.firepad-userlist {
+  vertical-align: middle;
+  text-align: left;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+.firepad-userlist * {
+  vertical-align: middle;
+}
+
+.firepad-userlist-invite
+{
+  display: inline-block;
+  cursor:pointer;
+  margin:0.5em 1em;
+}
+
+.firepad-userlist-heading {
+  display: inline-block;
+  margin: 20px 15px 0;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.firepad-userlist-users {
+  display: inline-block;
+}
+
+.firepad-userlist-user {
+  display: inline-block;
+  padding: 0 0 0 1em;
+  vertical-align: middle;
+}
+
+.firepad-userlist-color-indicator {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.1em;
+  -webkit-border-radius: 10em;
+  -moz-border-radius: 10em;
+  border-radius: 10em;
+  vertical-align: middle;
+}
+
+.firepad-userlist-color-indicator.self
+{
+  cursor:pointer;
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: middle;
+  -webkit-border-radius: 0.3em;
+     -moz-border-radius: 0.3em;
+          border-radius: 0.3em;
+}
+
+input.firepad-userlist-name-input {
+  display: inline-block;
+  border: 0;
+  padding: 0.3em 0.5em;
+  width: 7em;
+  -webkit-border-radius: 0.3em;
+  -moz-border-radius: 0.3em;
+  border-radius: 0.3em;
+  background: rgba(0,0,0,0.05);
+  vertical-align: middle;
+}
+
+.firepad-userlist-name-hint {
+  display: inline-block;
+}
+
+.firepad-userlist-name {
+  display: inline-block;
+  padding: 0.5em;
+  vertical-align: middle;
+}
+
+/*----- Dark -----*/
+.dark .userlistbar {
+  background: #222;
+  color: #fff;
+}
+.dark input.firepad-userlist-name-input{
+  background: rgba(255,255,255,0.1);
+}

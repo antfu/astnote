@@ -99,3 +99,9 @@ function download(filename, text) {
         pom.click();
     }
 }
+
+var get_file_name = function(ext)
+{
+  ext = ext || 'txt';
+  return 'astnote-{{name}}-'+(new Date()).toISOString().replace(/:|T/g,'-')+'.'+ext;
+}

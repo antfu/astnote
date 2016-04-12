@@ -34,8 +34,6 @@
     <div class="item" theme="github">Github</div>
     <div class="item" theme="dawn">Dawn</div>
     <div class="item" theme="terminal" theme-style="dark">Terminal</div>
-    <div class="item" theme="xcode">Xcode</div>
-    <div class="item" theme="crimson_editor">Crimson</div>
     <div class="item" theme="ambiance" theme-style="dark">Ambiance</div>
   </div>
 </div>
@@ -58,7 +56,7 @@
   }
   coder.theme.load = function()
   {
-    var theme_code = 'monokai';
+    var theme_code = 'dawn';
     if (get_url_parameter('theme'))
       lang = get_url_parameter('theme');
     if (Cookies.get('astnote-code-theme'))

@@ -29,29 +29,25 @@
       <a class="item" href="/random/m"><div class="ui blue empty circular label"></div>Markdown</a>
     </div>
   </div>
-  <br>
-  <h3 class="ui header">
-    Rich Text Demo
-    <a href="/r/demo/423" class="unit shallow"><i class="external share icon"></i></a>
-  </h3>
-  <iframe src="/r/demo/423?bar=hidden&demo=true"
-          style="width:100%;height:30em;border-width:1px;border-color:rgba(0,0,0,0.3);resize:vertical;">
-  </iframe>
-  <h3 class="ui header">
-    Code Demo
-    <a href="/c/demo/468" class="unit shallow"><i class="external share icon"></i></a>
-  </h3>
-  <iframe src="/c/demo/468?demo=true"
-          style="width:100%;height:30em;border-width:1px;border-color:rgba(0,0,0,0.3);resize:vertical;">
-  </iframe>
-  <h3 class="ui header">
-    Markdown Demo
-    <a href="/m/demo/324" class="unit shallow"><i class="external share icon"></i></a>
-  </h3>
-  <iframe src="/m/demo/324?demo=true"
-          style="width:100%;height:30em;border-width:1px;border-color:rgba(0,0,0,0.3);resize:vertical;">
-  </iframe>
-  <br><br><br>
+  <div id="demos">
+    <h3 class="ui header">
+      Demos
+    </h3>
+    <div class="ui top attached tabular menu">
+      <div class="item" data-tab="rich">Rich Text</div>
+      <div class="item" data-tab="md">Markdown</div>
+      <div class="item" data-tab="code">Code</div>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="rich">
+      <iframe raw-src="/r/demo/423?demo=true&bar=hidden" parent-tab="rich"></iframe>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="md">
+      <iframe raw-src="/m/demo/324?demo=true" parent-tab="md"></iframe>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="code">
+      <iframe raw-src="/c/demo/468?demo=true" parent-tab="code"></iframe>
+    </div>
+  </div>
   <script>
     $('#create_btn, [name=histoy_dropdown]').dropdown();
     var room_url = access_cookies('prev');
@@ -64,6 +60,41 @@
     {
       $('#historys_button').removeClass('transition hidden');
     }
+    $('#demos .tabular.menu .item').tab({
+      onFirstLoad:function(tabPath, parameterArray, historyEvent){
+        var i = $('#demos iframe[parent-tab="'+tabPath+'"]');
+        var t = $('#demos .tab.segment[data-tab="'+tabPath+'"]');
+        t.addClass('loading');
+        i.attr('src',i.attr('raw-src'));
+        i.on('load',function(){
+          t.removeClass('loading');
+        });
+    }});
+    $(function(){
+      $('#demos .tabular.menu .item[data-tab="rich"]').click();
+    });
   </script>
+  <style>
+  #demos
+  {
+    margin: 2em 0;
+  }
+  #demos .tabular.menu .item
+  {
+    cursor: pointer;
+  }
+  #demos iframe
+  {
+    width:100%;
+    height:30em;
+    border-width:0;
+    resize:vertical;
+    margin-bottom: -0.2em;
+  }
+  #demos .tab.segment
+  {
+    padding: 0;
+  }
+  </style>
 </div>
 {% end %}
