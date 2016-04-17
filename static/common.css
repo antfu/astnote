@@ -61,8 +61,12 @@ i.image.icon:before
   -moz-border-radius: 0.3em;
   border-radius: 0.3em;
   line-height: 1.4285em;
-  background: rgba(0,0,0,0.01);
+  background: none;
   vertical-align: middle;
+}
+.dark .title-input
+{
+  color: #fff;
 }
 .title-input:focus {
   outline: none;

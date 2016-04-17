@@ -3,7 +3,7 @@
 {% block title %}Index{% end %}
 
 {% block meta %}
-<script src="/static/editor.js"></script>
+<script src="{{ static_url('editor.js') }}"></script>
 {% end %}
 
 {% block content %}
@@ -75,7 +75,7 @@
     });
   </script>
   <style>
-  body{background: url("/static/geometry2.png");}
+  body{background: url("{{ static_url('geometry2.png') }}");}
   #demos
   {
     margin: 2em 0;

@@ -217,10 +217,6 @@ body { margin: 0; height: 100%;}
   font-family: 'Helvetica Neue', sans-serif;
 }
 
-.firepad-userlist * {
-  vertical-align: middle;
-}
-
 .firepad-userlist-invite
 {
   display: inline-block;

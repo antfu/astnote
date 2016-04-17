@@ -23,14 +23,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/>
   {% end %}
   {% if min %}
-    <script src="/static/firepad.min.js"></script>
+    <script src="{{ static_url('firepad.min.js') }}"></script>
   {% else %}
-    <script src="/static/firepad.js"></script>
+    <script src="{{ static_url('firepad.js') }}"></script>
   {% end %}
-  <link rel="stylesheet" href="/static/common.css" />
-  <link rel="stylesheet" href="/static/firepad.css" />
+  <link rel="stylesheet" href="{{ static_url('common.css') }}" />
+  <link rel="stylesheet" href="{{ static_url('firepad.css') }}" />
 
-  <script src="/static/editor.js"></script>
+  <script src="{{ static_url('editor.js') }}"></script>
 {% end %}
 
 {% block content %}
