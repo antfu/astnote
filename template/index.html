@@ -4,6 +4,7 @@
 
 {% block meta %}
 <script src="{{ static_url('editor.js') }}"></script>
+<script src="{{ static_url('quickjoin.js') }}"></script>
 {% end %}
 
 {% block content %}
@@ -16,13 +17,33 @@
     powered by <a href="https://firepad.io/" target="_blank">Firepad</a>, but more than Firepad.</span>
     </div>
   </h1>
-  <div class="ui compact teal dropdown button" style="margin-left:0;margin-bottom:0.5em" id="create_btn">
+  <div class="ui compact teal dropdown button" style="margin-left:0;margin-bottom:0.5em;" id="create_btn">
     New
     <div class="menu">
       <a class="item" href="/random/r"><div class="ui orange empty circular label"></div>Rich Text</a>
       <a class="item" href="/random/t"><div class="ui yellow empty circular label"></div>Plain Text</a>
       <a class="item" href="/random/c"><div class="ui olive empty circular label"></div>Code</a>
       <a class="item" href="/random/m"><div class="ui blue empty circular label"></div>Markdown</a>
+    </div>
+  </div>
+  <div class="ui compact blue button" style="background-color: #334D5C;"
+       onclick="$('#quick_join_panel').modal('show')">Quick Join</div>
+  <div class="ui modal" id="quick_join_panel">
+    <i class="close icon"></i>
+    <div class="content">
+      <h3 class="ui header">
+        Quick Join
+        <div class="sub header">
+        Press and hold the same button with your friend at same time.
+        </div>
+      </h3>
+      <div>
+        <div class="quick_join_button" join-key="a"></div>
+        <div class="quick_join_button" join-key="b"></div>
+        <div class="quick_join_button" join-key="c"></div>
+        <div class="quick_join_button" join-key="d"></div>
+        <div class="quick_join_button" join-key="e"></div>
+      </div>
     </div>
   </div>
   <h3 class="ui header" data-type="history">
@@ -54,7 +75,8 @@
     {
       var history_buttons = $('#history_buttons').empty();
       $.each(historys.history,function(i,e){
-        history_buttons.prepend('<a class="ui label" href="'+historys.url(e)+'">'+historys.format(e)+'</a>');
+        history_buttons.prepend('<a class="ui compact teal button" href="'+historys.url(e)+'">'
+            +historys.format(e)+'</a>');
       });
     }
 
@@ -73,6 +95,8 @@
       if (!historys.init()) $('[data-type="history"]').hide();
       setTimeout($('#demos .tabular.menu .item[data-tab="rich"]').click(),500);
     });
+
+    quickjoin.reg($('.quick_join_button'),'join');
   </script>
   <style>
   body{background: url("{{ static_url('geometry2.png') }}");}

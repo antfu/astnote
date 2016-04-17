@@ -1,4 +1,35 @@
 <div class="userlistbar" id="userlist"></div>
+<div class="ui modal" id="invite_panel">
+  <i class="close icon"></i>
+  <div class="content">
+    <h3 class="ui header">
+      Invite your friends edit with you
+      <div class="sub header">
+      Copy and share this link to your friends.
+      </div>
+    </h3>
+    <div class="ui fluid action input">
+      <input type="text" id="share_url" autocomplete="off" autocorrect="off"
+             autocapitalize="off" spellcheck="false"/>
+      <div class="ui teal icon button" id="share_copy">
+        <i class="icon paste"></i>
+      </div>
+    </div>
+    <h3 class="ui header">
+      Quick Invite
+      <div class="sub header">
+      Press and hold the same button with your friend at same time.
+      </div>
+    </h3>
+    <div>
+      <div class="quick_join_button" join-key="a"></div>
+      <div class="quick_join_button" join-key="b"></div>
+      <div class="quick_join_button" join-key="c"></div>
+      <div class="quick_join_button" join-key="d"></div>
+      <div class="quick_join_button" join-key="e"></div>
+    </div>
+  </div>
+</div>
 <script>
 function update_username(userName)
 {
@@ -25,12 +56,19 @@ function init_userlist(userId)
   var firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'),
     document.getElementById('userlist'), userId, userName, userColor);
 
-  var clipboard = new Clipboard('#share_button');
+  $('#share_url').val(window.location.origin+window.location.pathname).on('click',function(){$(this).select();});
+  $('#share_copy').attr('data-clipboard-text',window.location.origin+window.location.pathname);
+  quickjoin.reg($('.quick_join_button'),'host');
+  $('#share_button').on('click',function(){
+    $('#invite_panel').modal('show');
+    $('#share_url').focus().select();
+  });
+  var clipboard = new Clipboard('#share_copy');
   clipboard.on('success', function(e) {
-    var orginal_content = $('#share_button').html();
-    $('#share_button').html('<i class="icon checkmark"></i> Url Copied!').addClass('highlight');
+    var orginal_content = $('#share_copy').html();
+    $('#share_copy').html('<i class="icon checkmark"></i>').addClass('highlight');
     setTimeout(function() {
-      $('#share_button').html(orginal_content).removeClass('highlight');
+      $('#share_copy').html(orginal_content).removeClass('highlight');
     },2000);
   });
 }

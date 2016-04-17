@@ -27,16 +27,16 @@
   {% else %}
     <script src="{{ static_url('firepad.js') }}"></script>
   {% end %}
-  <link rel="stylesheet" href="{{ static_url('common.css') }}" />
   <link rel="stylesheet" href="{{ static_url('firepad.css') }}" />
 
   <script src="{{ static_url('editor.js') }}"></script>
+  <script src="{{ static_url('quickjoin.js') }}"></script>
 {% end %}
 
 {% block content %}
 <div class="screen" id="screen">
   <div class="menu bar" id="menu_bar">
-      <input type="text" class="title-input" id="editor_title_input" placeholder="No Title">
+      <input type="text" class="title-input" id="editor_title_input" maxlength="40" placeholder="No Title">
       <a href="/" class="unit highlight" style="cursor:pointer;" id="back_button">
         <i class="left arrow icon"></i>
       </a>
@@ -166,9 +166,10 @@
 
     var title_input = $('#editor_title_input');
     title_input.on('change',function(){
+      setTimeout(function(){title_input.attr({width: 'auto', size: title_input.val().length})},500);
       if (title_input.is(':focus'))
         editor.update_meta('title',title_input.val());
-    }).blur(function(){editor.update_meta('title',title_input.val())})
+    }).blur(function(){editor.update_meta('title',title_input.val())});
 
     if(get_url_parameter('demo'))
     {

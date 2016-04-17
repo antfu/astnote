@@ -48,6 +48,53 @@ class editors_handler(base_handler):
         else:
             self.render('error.html',error_code='Wrong Verify Code',error_display="Please check your url and try again.".format(authcode))
 
+quick_join_clients = {}
+quick_join_hosts = {}
+
+class quick_join_handler(base_handler):
+    @tornado.web.asynchronous
+    def get(self,key):
+        self.side = 'client'
+        self.key = key
+        if key in quick_join_hosts.keys():
+            host = quick_join_hosts[key]
+            self.write(host.url)
+            host.write('OK')
+            host.finish()
+            del(quick_join_hosts[key])
+            self.finish()
+        elif key in quick_join_clients.keys():
+            self.finish()
+        else:
+            quick_join_clients[key] = self
+
+    @tornado.web.asynchronous
+    def post(self,key):
+        self.side = 'host'
+        self.key = key
+        self.url = self.get_argument('url',None)
+        if not self.url:
+            self.finish()
+        elif key in quick_join_clients.keys():
+            client = quick_join_clients[key]
+            client.write(self.url)
+            client.finish()
+            del(quick_join_clients[key])
+            self.write('OK')
+            self.finish()
+        elif key in quick_join_hosts.keys():
+            self.finish()
+        else:
+            quick_join_hosts[key] = self
+
+    def on_connection_close(self):
+        if self.side == 'host':
+            if self.key in quick_join_hosts.keys():
+                del(quick_join_hosts[self.key])
+        elif self.side == 'client':
+            if self.key in quick_join_clients.keys():
+                del(quick_join_clients[self.key])
+
 class not_found_handler(base_handler):
     def get(self):
         self.render('error.html',error_code='404',error_display='Page Not Found')
@@ -73,6 +120,7 @@ if __name__ == '__main__':
             (r'/random/(r|t|c|m)',random_handler),
             (r'/ant/(r|t|c|m)/(\w+)',create_handler),
             (r'/(r|t|c|m)/(\w+)/(\w+)',editors_handler),
+            (r'/quickjoin/(\w+)',quick_join_handler),
             (r'.*',not_found_handler)
         ],
         template_path='template',

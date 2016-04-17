@@ -56,7 +56,8 @@ i.image.icon:before
   border: 0;
   padding: 0 0.5em;
   margin: 0 0.5em;
-  width: 10em;
+  min-width: 10em;
+  max-width: 50em;
   -webkit-border-radius: 0.3em;
   -moz-border-radius: 0.3em;
   border-radius: 0.3em;
@@ -80,6 +81,62 @@ i.image.icon:before
   }
 }
 
+#history_buttons .button
+{
+  opacity: 0.4;
+  margin-bottom: 0.25em;
+}
+#history_buttons .button:nth-child(1)
+{
+  opacity: 1;
+}
+#history_buttons .button:nth-child(2)
+{
+  opacity: 0.8;
+}
+#history_buttons .button:nth-child(3)
+{
+  opacity: 0.6;
+}
+/*-----Quick Join-----*/
+.quick_join_button
+{
+  width: 3em;
+  height: 3em;
+  margin: -0.3em;
+  background-color: #eee;
+  border-radius: 10em;
+  display: inline-block;
+  -webkit-transform: scale(0.5,0.5);
+          transform: scale(0.5,0.5);
+  -webkit-transition: all 0.5s ease-in;
+          transition: all 0.5s ease-in;
+}
+.quick_join_button:active
+{
+  -webkit-transform: scale(1,1);
+          transform: scale(1,1);
+}
+.quick_join_button[join-key=a]
+{
+  background-color: #334D5C;
+}
+.quick_join_button[join-key=b]
+{
+  background-color: #45B29D;
+}
+.quick_join_button[join-key=c]
+{
+  background-color: #EFC94C;
+}
+.quick_join_button[join-key=d]
+{
+  background-color: #E27A3F;
+}
+.quick_join_button[join-key=e]
+{
+  background-color: #DF5A49;
+}
 /*-----Markdown-----*/
 #editor #mark_preview
 {
