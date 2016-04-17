@@ -16,14 +16,7 @@
     powered by <a href="https://firepad.io/" target="_blank">Firepad</a>, but more than Firepad.</span>
     </div>
   </h1>
-  <div class="ui compact orange buttons" style="margin-bottom:0.5em;">
-    <div class="ui button" name="histoy_prev_btn">Recent</div>
-    <div class="ui compact floating dropdown icon button" name="histoy_dropdown">
-      <i class="dropdown icon"></i>
-      <div class="menu"></div>
-    </div>
-  </div>
-  <div class="ui compact teal dropdown button" style="margin-left:0.5em;margin-bottom:0.5em" id="create_btn">
+  <div class="ui compact teal dropdown button" style="margin-left:0;margin-bottom:0.5em" id="create_btn">
     New
     <div class="menu">
       <a class="item" href="/random/r"><div class="ui orange empty circular label"></div>Rich Text</a>
@@ -32,20 +25,10 @@
       <a class="item" href="/random/m"><div class="ui blue empty circular label"></div>Markdown</a>
     </div>
   </div>
-  <h3 class="ui header">
-    Public Notes
+  <h3 class="ui header" data-type="history">
+    Historys
   </h3>
-  <div class="ui pagination menu">
-    <a class="item" href="/r/public1/702">R1</a>
-    <a class="item" href="/r/public2/159">R2</a>
-    <a class="item" href="/r/public3/133">R3</a>
-    <a class="item" href="/m/public1/886">M1</a>
-    <a class="item" href="/c/public1/899">C1</a>
-    <a class="item" href="/c/public2/182">C2</a>
-    <a class="item" href="/c/public3/225">C3</a>
-    <a class="item" href="/c/public4/253">C4</a>
-  </div>
-
+  <div class="ui labels" id="history_buttons" data-type="history"></div>
   <div id="demos">
     <h3 class="ui header">
       Demos
@@ -67,6 +50,14 @@
   </div>
   <br>
   <script>
+    historys.display_historys = function()
+    {
+      var history_buttons = $('#history_buttons').empty();
+      $.each(historys.history,function(i,e){
+        history_buttons.prepend('<a class="ui label" href="'+historys.url(e)+'">'+historys.format(e)+'</a>');
+      });
+    }
+
     $('#create_btn, [name=histoy_dropdown]').dropdown();
     $('#demos .tabular.menu .item').tab({
       onFirstLoad:function(tabPath, parameterArray, historyEvent){
@@ -79,7 +70,7 @@
         });
     }});
     $(function(){
-      if (historys.init()) $('#historys_button').removeClass('transition hidden');
+      if (!historys.init()) $('[data-type="history"]').hide();
       setTimeout($('#demos .tabular.menu .item[data-tab="rich"]').click(),500);
     });
   </script>

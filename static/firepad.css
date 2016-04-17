@@ -275,8 +275,11 @@ input.firepad-userlist-name-input {
   -webkit-border-radius: 0.3em;
   -moz-border-radius: 0.3em;
   border-radius: 0.3em;
-  background: rgba(0,0,0,0.05);
+  background: rgba(0,0,0,0.02);
   vertical-align: middle;
+}
+input.firepad-userlist-name-input:focus {
+  outline: none;
 }
 
 .firepad-userlist-name-hint {

@@ -21,7 +21,8 @@ class base_handler(tornado.web.RequestHandler):
     def get_template_namespace(self):
         ns = super(base_handler, self).get_template_namespace()
         ns.update({
-            'firebase': configs.firebase
+            'firebase': configs.firebase,
+            'min': configs.minify
         })
         return ns
 
@@ -43,9 +44,9 @@ class create_handler(base_handler):
 class editors_handler(base_handler):
     def get(self,mode,name,authcode):
         if authcode == get_authcode(mode,name):
-            self.render('editor.html',mode=mode,name=name)
+            self.render('editor.html',mode=mode,name=name,authcode=get_authcode(mode,name,16))
         else:
-            self.render('error.html',error_code='Auth Failed',error_display='Maybe you got a wrong url.')
+            self.render('error.html',error_code='Wrong Verify Code',error_display="Please check your url and try again.".format(authcode))
 
 class not_found_handler(base_handler):
     def get(self):
@@ -61,7 +62,8 @@ def minify():
     print('Minify Finished')
 
 if __name__ == '__main__':
-    minifier.minify('static/firepad.js')
+    if configs.minify:
+        minifier.minify('static/firepad.js')
     args = sys.argv
     args.append("--log_file_prefix=logs/web.log")
     tornado.options.parse_command_line()

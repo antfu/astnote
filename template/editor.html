@@ -22,8 +22,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/github-markdown-css/2.2.1/github-markdown.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/>
   {% end %}
-
-  <script src="/static/firepad.min.js"></script>
+  {% if min %}
+    <script src="/static/firepad.min.js"></script>
+  {% else %}
+    <script src="/static/firepad.js"></script>
+  {% end %}
   <link rel="stylesheet" href="/static/common.css" />
   <link rel="stylesheet" href="/static/firepad.css" />
 
@@ -33,6 +36,7 @@
 {% block content %}
 <div class="screen" id="screen">
   <div class="menu bar" id="menu_bar">
+      <input type="text" class="title-input" id="editor_title_input" maxlength="20" placeholder="No Title">
       <a href="/" class="unit highlight" style="cursor:pointer;" id="back_button">
         <i class="left arrow icon"></i>
       </a>
@@ -47,13 +51,56 @@
         <i class="cloud download icon"></i>
       </div>
       {% if mode == 'c' %}
-        {% include code.part.html %}
-      {% elif mode == 'm' %}
-        <div class="unit highlight" style="cursor:pointer;" onclick="markdown.toggle_preview()" id="md_preview_btn" data-variation="tiny basic">
+        <div class="ui top left pointing dropdown inline" id="syntax_dropdown">
+          <i class="icon code" style="opacity:0.7"></i>
+          <div class="text" style="opacity:0.7">Syntax</div>
+          <div class="menu" id="syntax_menu">
+            <div class="item" syntax="c_cpp" ext="cpp">C/C++</div>
+            <div class="item" syntax="java">Java</div>
+            <div class="item" syntax="csharp" ext="cs">C#</div>
+            <div class="item" syntax="objectivec" ext="m">Objective-C</div>
+            <div class="item" syntax="python" ext="py">Python</div>
+            <div class="item" syntax="javascript" ext="js">Javascript</div>
+            <div class="item" syntax="ruby">Ruby</div>
+            <div class="item" syntax="swift">Swift</div>
+            <div class="item" syntax="html">HTML</div>
+            <div class="item" syntax="css">CSS</div>
+            <div class="item" syntax="php">PHP</div>
+            <div class="item" syntax="sql">SQL</div>
+            <div class="item" syntax="autohotkey" ext="ahk">AutoHotkey</div>
+            <div class="item" syntax="lisp">Lisp</div>
+            <div class="item" syntax="lua">Lua</div>
+          </div>
         </div>
+        <div class="ui top left pointing dropdown inline" id="theme_dropdown">
+          <i class="icon theme" style="opacity:0.7"></i>
+          <div class="text" style="opacity:0.7">Theme</div>
+          <div class="menu" id="theme_menu">
+            <div class="item" theme="monokai" theme-style="dark">Monokai</div>
+            <div class="item" theme="mono_industrial" theme-style="dark">Mono Industrial</div>
+            <div class="item" theme="tomorrow">Tomorrow</div>
+            <div class="item" theme="tomorrow_night" theme-style="dark">Tomorrow Night</div>
+            <div class="item" theme="twilight" theme-style="dark">Twilight</div>
+            <div class="item" theme="textmate">Textmate</div>
+            <div class="item" theme="solarized_light">Solarized Light</div>
+            <div class="item" theme="solarized_dark" theme-style="dark">Solarized Dark</div>
+            <div class="item" theme="github">Github</div>
+            <div class="item" theme="dawn">Dawn</div>
+            <div class="item" theme="terminal" theme-style="dark">Terminal</div>
+            <div class="item" theme="ambiance" theme-style="dark">Ambiance</div>
+          </div>
+        </div>
+        <div class="unit" id="text_warp_toggle" style="cursor:pointer;" onclick="coder.warpmode.toggle()">
+        </div>
+      {% elif mode == 'm' %}
+        <div class="unit highlight" style="cursor:pointer;" onclick="markdown.toggle_preview()" id="md_preview_btn"></div>
+        <div class="unit highlight" style="cursor:pointer;" onclick="markdown.toggle_scroll_sync()" id="md_sync_btn"></div>
       {% end %}
   </div>
-  <div id="editor" style="position:relative;" class="{{'markdown' if mode == 'm' else ''}}">
+  <div id="editor" style="position:relative;margin:0;padding:0;" class="{{'markdown' if mode == 'm' else ''}}" >
+    <div class="ui active inverted dimmer">
+      <div class="ui large text loader">Restoring</div>
+    </div>
     <div id="firepad"></div>
     {% if mode == 'm' %}
       <div id="mark_preview">
@@ -72,7 +119,6 @@
 {% end %}
 {% block scripts %}
   <script>
-    var save = function(filename){};
     function resize_pad(){
       var height = $(window).height() - ($('#menu_bar').height()||0) - ($('#userlist').height()||0) - 6;
       $('#editor').css('height',height).css('max-height',height);
@@ -94,7 +140,7 @@
         {
           event.preventDefault();
           if (confirm("Do you want save this note to file ?"))
-            save();
+            editor.save();
         }
     });
   </script>
@@ -107,53 +153,47 @@
     $(resize_pad);
     $(historys.init());
 
-    var fireurl = '{{firebase}}/astnote/{{mode}}/{{name}}';
+    var fireurl = '{{firebase}}/astnote/{{mode}}/{{name}}-{{authcode}}';
     var firepadRef = new Firebase(fireurl);
-    var firepad = undefined;
     var userId = get_user_id();
     if (init_userlist)
       init_userlist(userId);
 
-    /// ---- Modes ---- ///
-    if (mode == 'c')
-    {
-      //Editor Init
-      firepad = coder.init(userId);
-      save = function(filename){
-        filename = filename || get_file_name(coder.syntax.get_ext());
-        download(filename,firepad.getText());
-      };
-    }
-    else if (mode == 'r')
-    {
-      //rich text
-      var codeMirror = CodeMirror(document.getElementById('firepad'), { lineWrapping: true });
-      firepad = Firepad.fromCodeMirror(firepadRef, codeMirror,
-          { richTextToolbar: true, richTextShortcuts: true, userId: userId});
-      save = function(filename){
-        filename = filename || get_file_name('html');
-        var html_data = '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Astnote Save</title></head><body>'+firepad.getHtml() + '</body></html>';
-        download(filename,html_data);
-      }
-    }
-    else
-    {
-      //plain text
-      var codeMirror = CodeMirror(document.getElementById('firepad'), { lineWrapping: true });
-      firepad = Firepad.fromCodeMirror(firepadRef, codeMirror, { userId: userId});
-      save = function(filename){
-        filename = filename || get_file_name('txt');
-        download(filename,firepad.getText());
-      }
-    }
-    if (mode == 'm') markdown.init();
+    var editor = editor.init(firepadRef,'firepad',userId, mode);
+    var firepad = editor.firepad;
+    editor.firepad.on('ready', function(){$('#editor .dimmer').removeClass('active');});
+    save = editor.save;
+
+    var title_input = $('#editor_title_input');
+    title_input.on('change',function(){
+      if (title_input.is(':focus'))
+        editor.update_meta('title',title_input.val());
+    }).blur(function(){editor.update_meta('title',title_input.val())})
 
     if(get_url_parameter('demo'))
     {
       $('#back_button').hide();
       $('#historys').hide();
+      $('#editor_title_input').hide();
+      historys.renew = function(){};
     }
-    else
-      historys.renew();
+
+    historys.display_historys = function()
+    {
+      var menu = $('[name=histoy_dropdown] .menu').empty();
+      if (historys.history.length)
+      {
+          $.each(historys.history,function(i,e){
+              menu.append('<div class="item" target="'+historys.url(e)+'">'+historys.format(e)+'</div>');
+          });
+          $('[name=histoy_dropdown]')
+            .removeClass('transition hidden')
+            .dropdown({
+                onChange: function(t,h,selectedItem) {
+                  window.location = selectedItem.attr('target');
+                }
+              });
+      }
+    }
   </script>
 {% end %}

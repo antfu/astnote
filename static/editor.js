@@ -1,71 +1,66 @@
 var historys = {}
+historys.remove_historys = function(){};
 historys.init = function()
 {
-  var room_history = access_cookies('history') || [];
+  historys.history = access_cookies('history') || [];
   var modes = {r:'Rich Text',p:'Plain Text',m:'Markdown',c:'Code'};
-  historys.format = function(url)
+  historys.format = function(data)
   {
-    //var mode = modes[url.slice(1,2)];
-    return url.slice(1,2).toUpperCase() + ' ' + url.slice(3,url.length-4);
+    function f(url){
+      return url.slice(3,url.length-4);
+    }
+    if (Array.isArray(data))
+      return data[1] || f(data[0]);
+    else
+      return f(data);
+  }
+  historys.url = function(data)
+  {
+    if (Array.isArray(data))
+      return data[0];
+    else
+      return data;
   }
   historys.remove_historys = function(index)
   {
     if (index > -1)
-        room_history.splice(index, 1);
-    access_cookies('history',room_history);
-    display_historys();
-  }
-  historys.display_historys = function()
-  {
-    var menu = $('[name=histoy_dropdown] .menu').empty();
-    if (room_history.length)
-    {
-        $.each(room_history,function(i,e){
-            menu.append('<div class="item" target="'+e+'">'+historys.format(e)+'</div>');
-        });
-        $('[name=histoy_dropdown]')
-          .removeClass('transition hidden')
-          .dropdown({
-              onChange: function(t,h,selectedItem) {
-                window.location = selectedItem.attr('target');
-              }
-            });
-        $('[name=histoy_prev_btn]')
-          .removeClass('transition hidden')
-          .on('click',function(){
-            window.location = room_history[room_history.length-1];
-          });
-    }
+        historys.history.splice(index, 1);
+    access_cookies('history',historys.history);
+    historys.display_historys();
   }
   historys.renew = function()
   {
     var room_url = window.location.pathname;
-    if (!room_history) room_history = [];
-    if (room_history.length >= 7) room_history.shift();
-    var room_index = room_history.indexOf(room_url);
-    if (room_index > -1)
-        room_history.splice(room_index, 1);
-    room_history.push(room_url);
-    access_cookies('history',room_history);
+    if (!historys.history) historys.history = [];
+    if (historys.history.length > 7) historys.history.shift();
+    $.each(historys.history,function(i,e)
+    {
+      if (e == room_url || e[0] == room_url)
+        historys.history.splice(i, 1);
+    });
+    historys.history.push([room_url,editor.title]);
+    access_cookies('history',historys.history);
+    historys.display_historys();
   }
   $(historys.display_historys);
-  return room_history;
+  return historys.history;
 }
 
 var markdown = {};
-markdown.init = function(){
+markdown.init = function(editor){
+  markdown.synced = false;
   markdown.toggle_preview = function(val) {
     if (val == undefined)
       val = !$('#editor').hasClass('preview');
     if (val)
     {
       $('#editor').addClass('preview');
-      $('#md_preview_btn').html('<i class="icon hide"></i>').attr('data-content','Hide markdown preview').popup();
+      $('#md_preview_btn').html('<i class="hide icon"></i> Hide Preview');
     }
     else
     {
       $('#editor').removeClass('preview');
-      $('#md_preview_btn').html('<i class="icon unhide"></i>').attr('data-content','Show markdown preview').popup();
+      $('#md_preview_btn').html('<i class="unhide icon"></i> Preview');
     }
   }
   markdown.update = function()
@@ -78,22 +73,38 @@ markdown.init = function(){
     var html_data = '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Astnote Markdown Save</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/github-markdown-css/2.2.1/github-markdown.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/></head><body><div class="markdown-body" style="margin:2em;">'+marked(firepad.getText()) + '</div></body></html>';
     download(filename,html_data);
   }
-  markdown.scroll_sync = function(a,b) {
-    var scrolling = false;
-    function scroll_bind(source,target)
+  markdown.toggle_scroll_sync = function(val)
+  {
+    if (val != undefined)
+      markdown.synced = val;
+    else
+      markdown.synced = !markdown.synced;
+    var a = $('#firepad .CodeMirror-vscrollbar')
+    var b = $('#mark_preview');
+    if (markdown.synced)
     {
-      source.on('scroll', function() {
-        if (!scrolling)
-        {
-          scrolling = true;
-          target.scrollTop(source.scrollTop() / source.prop("scrollHeight") * target.prop("scrollHeight"));
-          setTimeout(function() {scrolling = false; }, 40);
-        }
-        return true;
-      });
+      markdown._scroll_bind(a,b);
+      markdown._scroll_bind(b,a);
+      //$('#md_sync_btn').html('Scrolling sync on');
     }
-    scroll_bind(a,b);
-    scroll_bind(b,a);
+    else
+    {
+      markdown._scroll_unbind(a);
+      markdown._scroll_unbind(b);
+      //$('#md_sync_btn').html('Scrolling sync off');
+    }
+  }
+  markdown._scroll_bind = function (source,target)
+  {
+    source.on('scroll', function() {
+      target.scrollTop(source.scrollTop() / source.prop("scrollHeight") * target.prop("scrollHeight"));
+      setTimeout(function() {scrolling = false; }, 40);
+      return true;
+    });
+  }
+  markdown._scroll_unbind = function (source)
+  {
+    source.off('scroll');
   }
   $(function(){
     marked.setOptions({
@@ -101,16 +112,16 @@ markdown.init = function(){
         return hljs.highlightAuto(code).value;
       }
     });
-    firepad.on('synced', markdown.update);
-    firepad.on('ready', markdown.update);
+    editor.firepad.on('synced', markdown.update);
+    editor.firepad.on('ready', markdown.update);
 
     markdown.toggle_preview(true);
-    markdown.scroll_sync($('#firepad .CodeMirror-vscrollbar'),$('#mark_preview'));
+    markdown.toggle_scroll_sync(false);
   });
 }
 
 var coder = {};
-coder.init  = function (userId) {
+coder.init  = function (editor) {
   coder.theme = {};
   coder.syntax = {};
   coder.theme.load = function()
@@ -129,30 +140,40 @@ coder.init  = function (userId) {
     coder.theme.val = theme_code;
     var menu_item = $('#theme_menu .item[theme="'+theme_code+'"]');
     if (menu_item && menu_item.attr('theme-style') == 'dark')
+    {
+      $('#editor .dimmer').removeClass('inverted');
       $('#screen').addClass('dark');
+    }
     else
+    {
       $('#screen').removeClass('dark');
+      $('#editor .dimmer').addClass('inverted');
+    }
     coder.editor.setTheme("ace/theme/"+theme_code);
     if(!get_url_parameter('demo'))
       Cookies.set('astnote-code-theme',theme_code,{ expires: 90 });
   }
-  coder.syntax.load = function ()
+  coder.syntax.load = function (lang)
   {
-    var lang = 'python';
+    var lang = lang || '';
     if (get_url_parameter('syntax'))
       lang = get_url_parameter('syntax');
-    if (Cookies.get('astnote-code-syntax'))
-      lang = Cookies.get('astnote-code-syntax');
     coder.syntax.set(lang);
-    var menu_item = $('#syntax_menu .item[syntax="'+lang+'"]');
-    if (menu_item) menu_item.click();
+  }
+  coder.syntax.update = function(lang)
+  {
+    editor.update_meta('syntax',lang);
   }
   coder.syntax.set = function(lang)
   {
     coder.syntax.val = lang;
-    coder.session.setMode("ace/mode/"+lang);
+    if (lang)
+      coder.session.setMode("ace/mode/"+lang);
+    else
+      coder.session.setMode('');
     if(!get_url_parameter('demo'))
       Cookies.set('astnote-code-syntax',lang,{expires: 10, path:window.location.pathname});
+    $('#syntax_dropdown').dropdown('set selected',$('#syntax_menu .item[syntax="'+lang+'"]').text());
   }
   coder.syntax.get_ext = function()
   {
@@ -176,16 +197,88 @@ coder.init  = function (userId) {
 
   $(function(){
     $('#syntax_dropdown, #theme_dropdown').dropdown();
-    $('#syntax_menu .item').on('click',function(){coder.syntax.set($(this).attr('syntax'))});
+    $('#syntax_menu .item').on('click',function(){coder.syntax.update($(this).attr('syntax'))});
     $('#theme_menu .item').on('click',function(){coder.theme.set($(this).attr('theme'))});
     coder.theme.load();
     coder.syntax.load();
     coder.warpmode(true);
   });
 
-  coder.editor = ace.edit("firepad");
+  coder.editor = ace.edit(editor.target);
   coder.session = coder.editor.getSession();
   coder.editor.$blockScrolling = Infinity;
   coder.session.setUseWorker(false);
-  return Firepad.fromACE(firepadRef, coder.editor, {userId: userId});
+
+  editor.bind_meta('syntax',function(snapshot)
+  {
+    coder.syntax.set(snapshot.val());
+  });
+  return Firepad.fromACE(editor.ref, coder.editor, {userId: editor.user_id});
+}
+
+
+var editor = {};
+editor.init = function(firepadRef, target, userId, mode)
+{
+  editor.ref = firepadRef;
+  editor.mode = mode;
+  editor.user_id = userId;
+  editor.target = target;
+  editor.meta_ref = editor.ref.child('meta');
+  editor.bind_meta('title',function(dataSnapshot){
+    $('#editor_title_input').val(dataSnapshot.val());
+    editor.title = dataSnapshot.val();
+    document.title = (editor.title || 'Editor') + ' - Astnote';
+    historys.renew();
+  });
+  if (mode == 'c')
+  {
+    //Editor Init
+    editor.firepad = coder.init(editor);
+    editor.dumps = function(){return editor.firepad.getText()};
+    editor.ext = coder.syntax.get_ext;
+  }
+  else if (mode == 'r')
+  {
+    //rich text
+    var codeMirror = CodeMirror(document.getElementById(target), { lineWrapping: true });
+    editor.firepad = Firepad.fromCodeMirror(firepadRef, codeMirror,
+        { richTextToolbar: true, richTextShortcuts: true, userId: userId});
+    editor.ext = function(){return 'html';};
+    editor.dumps = function(){
+      return '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>'+(editor.title||'Astnote')+'</title></head><body>'+editor.firepad.getHtml() + '</body></html>';
+    }
+  }
+  else
+  {
+    //plain or markdown mode
+    var codeMirror = CodeMirror(document.getElementById(target), { lineWrapping: true });
+    editor.firepad = Firepad.fromCodeMirror(firepadRef, codeMirror, { userId: userId});
+    editor.ext = function(){return 'text';};
+    editor.dumps = function(){return editor.firepad.getText()};
+  }
+  if (mode == 'm')
+  {
+    markdown.init(editor);
+    editor.ext = function(){return 'md';};
+  }
+
+  return editor;
+}
+editor.save = function(filename)
+{
+  filename = filename || editor.get_file_name();
+  download(filename,editor.dumps());
+}
+editor.update_meta = function(key,data)
+{
+  editor.meta_ref.child(key).set(data);
+}
+editor.bind_meta = function(key,on_value)
+{
+  editor.meta_ref.child(key).on('value',on_value);
+}
+editor.get_file_name = function()
+{
+  return (editor.title||'Astnote')+'-'+(new Date()).toISOString().replace(/:|-/g,'').replace(/T/g,'-').slice(0,15)+'.'+editor.ext();
 }

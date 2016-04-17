@@ -50,6 +50,31 @@ i.image.icon:before
 {
   content: "\f03e"
 }
+.title-input
+{
+  display: inline-block;
+  border: 0;
+  padding: 0 0.5em;
+  margin: 0 0.5em;
+  width: 10em;
+  -webkit-border-radius: 0.3em;
+  -moz-border-radius: 0.3em;
+  border-radius: 0.3em;
+  line-height: 1.4285em;
+  background: rgba(0,0,0,0.01);
+  vertical-align: middle;
+}
+.title-input:focus {
+  outline: none;
+}
+
+@media screen and (max-width: 600px) {
+  .title-input
+  {
+    display: block;
+    margin-top: 0.5em;
+  }
+}
 
 /*-----Markdown-----*/
 #editor #mark_preview
