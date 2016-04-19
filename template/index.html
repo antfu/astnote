@@ -15,7 +15,7 @@ body{background: url('{{ static_url('geometry2.png') }}');}
   <div class="ui link list" id="history_list"></div>
 </div>
 <div>
-  <div style="padding:7em 0;">
+  <div style="padding:7em 0 4em 0;">
     <h1 class="ui center aligned header">
       <img src="{{ static_url('title_logo.png') }}" style="height:6em;width:auto;margin:0.25em;"/>
       <br>
@@ -35,6 +35,7 @@ body{background: url('{{ static_url('geometry2.png') }}');}
         </div>
       </div>
       <div id="history_button" style="opacity:0.5;display:block;padding:1em;" data-position="bottom center"><i class="icon undo"></i>Historys</div>
+      </div>
     </h1>
     <h3 class="ui center aligned header transition hidden" style="margin-top:2em;" id="quick_join_panel">
       <div class="sub header">
@@ -44,28 +45,30 @@ body{background: url('{{ static_url('geometry2.png') }}');}
       </div>
     </h3>
   </div>
-  <div class="ui three column center aligned relaxed stackable grid" style="padding:5em 1em 5em 1em;font-size:0.9em;background:rgba(0,0,0,0.02);">
-    <div class="row">
-      <div class="column">
-        <h5 class="ui icon header">
-          <i class="ui icon edit"></i>
-          Multimode Editors
-        </h5>
-        <p>Synchronous <b>Rich text</b><br>Real-time <b>Markdown</b><br>Syntax highlighted pair <b>Coding</b></p>
-      </div>
-      <div class="column">
-        <h5 class="ui icon header">
-          <i class="ui icon users"></i>
-          Collaborative
-        </h5>
-        <p><b>Collaborative</b> editing with friends or teamates. Get things done in a easier and more efficiency way.</p>
-      </div>
-      <div class="column">
-        <h5 class="ui icon header">
-          <i class="ui icon cloud"></i>
-          On Cloud
-        </h5>
-        <p>All data Stored on Cloud. You can access your work <b>anytime and anywhere</b>.</p>
+  <div style="padding:5em 1em 5em 1em;background:rgba(255,255,255,0.6);">
+    <div class="ui three column center aligned relaxed stackable grid" style="font-size:0.9em;max-width:70em;margin:0 auto;">
+      <div class="row">
+        <div class="column">
+          <h5 class="ui icon header">
+            <i class="ui icon edit"></i>
+            Multimode Editors
+          </h5>
+          <p>Synchronous <b>Rich text</b><br>Real-time <b>Markdown</b><br>Syntax highlighted pair <b>Coding</b></p>
+        </div>
+        <div class="column">
+          <h5 class="ui icon header">
+            <i class="ui icon users"></i>
+            Collaborative
+          </h5>
+          <p><b>Collaborative</b> editing with friends or teamates. Get things done in a easier and more efficiency way.</p>
+        </div>
+        <div class="column">
+          <h5 class="ui icon header">
+            <i class="ui icon cloud"></i>
+            On Cloud
+          </h5>
+          <p>All data Stored on Cloud. You can access your work <b>anytime and anywhere</b>.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -89,7 +92,7 @@ body{background: url('{{ static_url('geometry2.png') }}');}
     </div>
   </div>
 
-  <div class="ui center aligned basic segment" style="padding:2em 5em;background:#f2f2f2">
+  <div class="ui center aligned basic segment" style="padding:2em 5em;background:rgba(125,125,125,0.06);">
     <a style="float:right;" href="//antnf.com">& Antnf</a>
     Made by <a href="https://github.com/AnthonyFu117">@Anthony Fu</a>
   </div>
