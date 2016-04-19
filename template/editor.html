@@ -34,20 +34,61 @@
 {% end %}
 
 {% block content %}
+
+<div class="ui modal" name="invite">
+  <i class="close icon"></i>
+  <div class="content">
+    <h3 class="ui header">
+      Invite your friends edit with you
+      <div class="sub header">
+      Copy and share this link to your friends.
+      </div>
+    </h3>
+    <div class="ui fluid action input">
+      <input type="text" name="share_url" autocomplete="off" autocorrect="off"
+             autocapitalize="off" spellcheck="false"/>
+      <div class="ui teal icon button" name="share_copy">
+        <i class="icon paste"></i>
+      </div>
+    </div>
+    <h3 class="ui header">
+      Quick Invite
+      <div class="sub header">
+      Press and hold the same button with your friend at same time.
+      </div>
+    </h3>
+    <div id="quick_joins"></div>
+  </div>
+</div>
+<div class="ui modal" name="code_setting">
+  <i class="close icon"></i>
+  <div class="content">
+    <div class="ui button" id="text_warp_toggle" style="cursor:pointer;"
+         onclick="coder.warpmode.toggle()"></div>
+  </div>
+</div>
+
+
+
 <div class="screen" id="screen">
   <div class="menu bar" id="menu_bar">
-      <input type="text" class="title-input" id="editor_title_input" maxlength="40" placeholder="No Title">
+      <input type="text" class="title-input" id="editor_title_input"
+             maxlength="40" placeholder="Enter a Title">
       <a href="/" class="unit highlight" style="cursor:pointer;" id="back_button">
         <i class="left arrow icon"></i>
       </a>
-      <div class="inline" id="historys">
-        <div class="ui dropdown transition hidden" name="histoy_dropdown">
-          <i style="opacity:0.7" class="history icon"></i>
+
+      <div class="unit highlight" id="historys">
+        <div class="ui dropdown" name="histoy_dropdown">
           <div class="menu">
           </div>
         </div>
+        <i class="history icon" onclick="$('[name=histoy_dropdown]').dropdown('show');"></i>
       </div>
-      <div class="unit highlight" style="cursor:pointer;" onclick="save()">
+      <div class="unit highlight" style="cursor:pointer;" onclick="modals.toggle('invite')">
+        <i class="share alternate icon"></i>
+      </div>
+      <div class="unit highlight" style="cursor:pointer;" onclick="editor.save()">
         <i class="cloud download icon"></i>
       </div>
       {% if mode == 'c' %}
@@ -90,7 +131,8 @@
             <div class="item" theme="ambiance" theme-style="dark">Ambiance</div>
           </div>
         </div>
-        <div class="unit" id="text_warp_toggle" style="cursor:pointer;" onclick="coder.warpmode.toggle()">
+        <div class="unit highlight" style="cursor:pointer;" onclick="modals.toggle('code_setting')">
+          <i class="setting icon"></i>
         </div>
       {% elif mode == 'm' %}
         <div class="unit highlight" style="cursor:pointer;" onclick="markdown.toggle_preview()" id="md_preview_btn"></div>
@@ -114,7 +156,7 @@
       </div>
     {% end %}
   </div>
-  {% include userlist.part.html %}
+  <div class="userlistbar" id="userlist"></div>
 </div>
 {% end %}
 {% block scripts %}
@@ -145,24 +187,16 @@
     });
   </script>
   <script>
-    var mode = '{{mode}}';
-    $('[name=histoy_dropdown]').addClass('top left pointing');
-    if(get_url_parameter('bar') == 'hidden') $('#menu_bar').height(0).hide();
-    if(get_url_parameter('back') == 'hidden') $('#back_button').hide();
     window.addEventListener('resize',resize_pad, true);
     $(resize_pad);
-    $(historys.init());
 
-    var fireurl = '{{firebase}}/astnote/{{mode}}/{{name}}-{{authcode}}';
-    var firepadRef = new Firebase(fireurl);
+    var firepadRef = new Firebase('{{firebase}}/astnote/{{mode}}/{{name}}-{{authcode}}');
     var userId = get_user_id();
-    if (init_userlist)
-      init_userlist(userId);
-
-    var editor = editor.init(firepadRef,'firepad',userId, mode);
-    var firepad = editor.firepad;
+    historys.init();
+    userlist.init(userId);
+    editor.init(firepadRef,'firepad',userId, '{{mode}}');
+    modals.init();
     editor.firepad.on('ready', function(){$('#editor .dimmer').removeClass('active');});
-    save = editor.save;
 
     var title_input = $('#editor_title_input');
     title_input.on('change',function(){
@@ -171,6 +205,9 @@
         editor.update_meta('title',title_input.val());
     }).blur(function(){editor.update_meta('title',title_input.val())});
 
+
+    if(get_url_parameter('bar') == 'hidden') $('#menu_bar').height(0).hide();
+    if(get_url_parameter('back') == 'hidden') $('#back_button').hide();
     if(get_url_parameter('demo'))
     {
       $('#back_button').hide();
@@ -182,19 +219,10 @@
     historys.display_historys = function()
     {
       var menu = $('[name=histoy_dropdown] .menu').empty();
-      if (historys.history.length)
-      {
-          $.each(historys.history,function(i,e){
-              menu.append('<div class="item" target="'+historys.url(e)+'">'+historys.format(e)+'</div>');
-          });
-          $('[name=histoy_dropdown]')
-            .removeClass('transition hidden')
-            .dropdown({
-                onChange: function(t,h,selectedItem) {
-                  window.location = selectedItem.attr('target');
-                }
-              });
-      }
+      $.each(historys.history,function(i,e){
+        menu.append('<a class="item" href="'+historys.url(e)+'">'+historys.format(e)+'</a>');
+      });
+      $('[name=histoy_dropdown]').dropdown();
     }
   </script>
 {% end %}

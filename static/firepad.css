@@ -208,7 +208,8 @@ body { margin: 0; height: 100%;}
   right: 0;
   background: #fff;
   color: #111;
-  border-top: 1px solid #c9c9c9;
+  border-top: 1px solid rgba(125,125,125,0.5);
+  z-index: 1000;
 }
 
 .firepad-userlist {
@@ -290,7 +291,7 @@ input.firepad-userlist-name-input:focus {
 
 /*----- Dark -----*/
 .dark .userlistbar {
-  background: #222;
+  background: #111;
   color: #fff;
 }
 .dark input.firepad-userlist-name-input{

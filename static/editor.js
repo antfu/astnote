@@ -65,12 +65,13 @@ markdown.init = function(editor){
   }
   markdown.update = function()
   {
-    $('#mark_preview .markdown-body').html(marked(firepad.getText()));
+    $('#mark_preview .markdown-body').html(marked(editor.firepad.getText()));
   }
   markdown.save = function(filename)
   {
     filename = filename || get_file_name('.html');
-    var html_data = '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Astnote Markdown Save</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/github-markdown-css/2.2.1/github-markdown.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/></head><body><div class="markdown-body" style="margin:2em;">'+marked(firepad.getText()) + '</div></body></html>';
+    var html_data = '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Astnote Markdown Save</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/github-markdown-css/2.2.1/github-markdown.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/></head><body><div class="markdown-body" style="margin:2em;">'
+      + marked(editor.firepad.getText()) + '</div></body></html>';
     download(filename,html_data);
   }
   markdown.toggle_scroll_sync = function(val)
@@ -281,4 +282,59 @@ editor.bind_meta = function(key,on_value)
 editor.get_file_name = function()
 {
   return (editor.title||'Astnote')+'-'+(new Date()).toISOString().replace(/:|-/g,'').replace(/T/g,'-').slice(0,15)+'.'+editor.ext();
+}
+
+var userlist = {};
+userlist.update_username = function(userName)
+{
+  Cookies.set('astnote-user-name',userName,{ expires: 90});
+}
+userlist.update_usercolor = function(color)
+{
+  Cookies.set('astnote-user-color',color,{ expires: 90});
+}
+userlist.init = function(userId)
+{
+  var userName = Cookies.get('astnote-user-name');
+  var userColor = Cookies.get('astnote-user-color');
+  var force_new_user = get_url_parameter('new_user');
+  if (!userName || force_new_user)
+  {
+    userName = undefined;
+  }
+  if (!userColor || force_new_user)
+  {
+    userColor = ramdom_hsv();
+    update_usercolor(userColor);
+  }
+  userlist.instant = FirepadUserList.fromDiv(firepadRef.child('users'),
+    document.getElementById('userlist'), userId, userName, userColor);
+
+}
+
+
+var modals = {};
+modals.init = function()
+{
+  modals.init_invite();
+}
+modals.init_invite = function()
+{
+  var invite_modal = $('.modal[name=invite]');
+  var share_url = invite_modal.find('[name=share_url]');
+  var share_copy = invite_modal.find('[name=share_copy]');
+  var path = window.location.origin+window.location.pathname;
+  share_url.val(path).on('click',function(){$(this).select();});
+  share_copy.attr('data-clipboard-text',path);
+  quickjoin.create($('#quick_joins'),'host');
+  $('#share_button').on('click',function(){modals.toggle('invite')});
+  (new Clipboard(share_copy[0])).on('success', function(e){
+    var orginal_content = share_copy.html();
+    share_copy.html('<i class="icon checkmark"></i>');
+    setTimeout(function(){share_copy.html(orginal_content);},2000);
+  });
+}
+modals.toggle = function(name)
+{
+  $('.modal[name="'+name+'"]').modal('toggle');
 }

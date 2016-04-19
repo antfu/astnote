@@ -51,3 +51,9 @@ quickjoin.reg = function($buttons,type)
   $buttons.mousedown(down).mouseup(up);
   //$buttons.addEventListener('touchstart',down).addEventListener('touchend',up);
 }
+quickjoin.create = function($target,type)
+{
+  for (var i=0;i<5;i++)
+    $target.append('<div class="quick_join_button" join-key="'+i+'"></div>');
+  quickjoin.reg($target.find('.quick_join_button'),type);
+}
