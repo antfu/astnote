@@ -4,77 +4,98 @@
 
 {% block meta %}
 <script src="{{ static_url('editor.js') }}"></script>
-<script src="{{ static_url('quickjoin.js') }}"></script>
 {% end %}
 
 {% block content %}
-<div class="ui main container" style="margin-top: 3em;">
-  <h1 class="ui header">
-    Astnote
-    <div class="sub header">
-    An online real-time collaborative text editor.<br>
-    <span style="font-style:italic;opacity:0.8">
-    powered by <a href="https://firepad.io/" target="_blank">Firepad</a>, but more than Firepad.</span>
-    </div>
-  </h1>
-  <div class="ui compact teal dropdown button" style="margin-left:0;margin-bottom:0.5em;" id="create_btn">
-    New
-    <div class="menu">
-      <a class="item" href="/random/r"><div class="ui orange empty circular label"></div>Rich Text</a>
-      <a class="item" href="/random/t"><div class="ui yellow empty circular label"></div>Plain Text</a>
-      <a class="item" href="/random/c"><div class="ui olive empty circular label"></div>Code</a>
-      <a class="item" href="/random/m"><div class="ui blue empty circular label"></div>Markdown</a>
-    </div>
-  </div>
-  <div class="ui compact blue button" style="background-color: #334D5C;"
-       onclick="$('#quick_join_panel').modal('show')">Quick Join</div>
-  <div class="ui modal" id="quick_join_panel">
-    <i class="close icon"></i>
-    <div class="content">
-      <h3 class="ui header">
-        Quick Join
-        <div class="sub header">
-        Press and hold the same button with your friend at same time.
+<style>
+html,body{height:100%;}
+body{background: url('{{ static_url('geometry2.png') }}');}
+</style>
+<div class="ui popup" id="history_popup">
+  <div class="ui link list" id="history_list"></div>
+</div>
+<div>
+  <div style="padding:7em 0;">
+    <h1 class="ui center aligned header">
+      <img src="{{ static_url('title_logo.png') }}" style="height:6em;width:auto;margin:0.25em;"/>
+      <br>
+      <div class="sub header">
+      An online real-time collaborative text editor<br>
+      <span style="font-style:italic;opacity:0.8">
+      powered by <a href="https://firepad.io/" target="_blank">Firepad</a>, but more than Firepad</span>
+      <br><br>
+      <div class="ui compact teal button" onclick="$('#quick_join_panel').transition('fade down')" style="background:#b8bb26">Join</div>
+      <div class="ui compact teal dropdown button" id="create_btn" style="background:#fabd2f">
+        Create
+        <div class="menu">
+          <a class="item" href="/random/r"><div class="ui orange empty circular label"></div>Rich Text</a>
+          <a class="item" href="/random/t"><div class="ui yellow empty circular label"></div>Plain Text</a>
+          <a class="item" href="/random/c"><div class="ui olive empty circular label"></div>Code</a>
+          <a class="item" href="/random/m"><div class="ui blue empty circular label"></div>Markdown</a>
         </div>
-      </h3>
+      </div>
+      <div id="history_button" style="opacity:0.5;display:block;padding:1em;" data-position="bottom center"><i class="icon undo"></i>Historys</div>
+    </h1>
+    <h3 class="ui center aligned header transition hidden" style="margin-top:2em;" id="quick_join_panel">
+      <div class="sub header">
+      Press and hold the same button with your friend at same time.
+      <br><br>
       <div id="quick_joins"></div>
-    </div>
-  </div>
-  <h3 class="ui header" data-type="history">
-    Historys
-  </h3>
-  <div class="ui labels" id="history_buttons" data-type="history"></div>
-  <div id="demos">
-    <h3 class="ui header">
-      Demos
+      </div>
     </h3>
-    <div class="ui top attached tabular menu">
-      <div class="item" data-tab="rich">Rich Text</div>
-      <div class="item" data-tab="md">Markdown</div>
-      <div class="item" data-tab="code">Code</div>
-    </div>
-    <div class="ui bottom attached tab segment" data-tab="rich">
-      <iframe raw-src="/r/demo/423?demo=true&bar=hidden" parent-tab="rich"></iframe>
-    </div>
-    <div class="ui bottom attached tab segment" data-tab="md">
-      <iframe raw-src="/m/demo/324?demo=true" parent-tab="md"></iframe>
-    </div>
-    <div class="ui bottom attached tab segment" data-tab="code">
-      <iframe raw-src="/c/demo/468?demo=true" parent-tab="code"></iframe>
+  </div>
+  <div class="ui three column center aligned relaxed stackable grid" style="padding:5em 1em 5em 1em;font-size:0.9em;background:rgba(0,0,0,0.02);">
+    <div class="row">
+      <div class="column">
+        <h5 class="ui icon header">
+          <i class="ui icon edit"></i>
+          Multimode Editors
+        </h5>
+        <p>Synchronous <b>Rich text</b><br>Real-time <b>Markdown</b><br>Syntax highlighted pair <b>Coding</b></p>
+      </div>
+      <div class="column">
+        <h5 class="ui icon header">
+          <i class="ui icon users"></i>
+          Collaborative
+        </h5>
+        <p><b>Collaborative</b> editing with friends or teamates. Get things done in a easier and more efficiency way.</p>
+      </div>
+      <div class="column">
+        <h5 class="ui icon header">
+          <i class="ui icon cloud"></i>
+          On Cloud
+        </h5>
+        <p>All data Stored on Cloud. You can access your work <b>anytime and anywhere</b>.</p>
+      </div>
     </div>
   </div>
-  <br>
-  <script>
-    historys.display_historys = function()
-    {
-      var history_buttons = $('#history_buttons').empty();
-      $.each(historys.history,function(i,e){
-        history_buttons.prepend('<a class="ui compact teal button" href="'+historys.url(e)+'">'
-            +historys.format(e)+'</a>');
-      });
-    }
+  <div class="ui main center aligned container" id="demo_panel" style="padding: 4em 1em;">
+    <div class="ui compact teal button" onclick="show_demo();$(this).hide();" style="background:#d3869b">Show Demos</div>
+    <div id="demos" class="ui transition hidden">
+      <div class="ui top attached tabular menu">
+        <div class="item" data-tab="rich">Rich Text</div>
+        <div class="item" data-tab="md">Markdown</div>
+        <div class="item" data-tab="code">Code</div>
+      </div>
+      <div class="ui bottom attached tab segment" data-tab="rich">
+        <iframe raw-src="/r/demo/423?demo=true&bar=hidden" parent-tab="rich"></iframe>
+      </div>
+      <div class="ui bottom attached tab segment" data-tab="md">
+        <iframe raw-src="/m/demo/324?demo=true" parent-tab="md"></iframe>
+      </div>
+      <div class="ui bottom attached tab segment" data-tab="code">
+        <iframe raw-src="/c/demo/468?demo=true" parent-tab="code"></iframe>
+      </div>
+    </div>
+  </div>
 
-    $('#create_btn, [name=histoy_dropdown]').dropdown();
+  <div class="ui center aligned basic segment" style="padding:2em 5em;background:#f2f2f2">
+    <a style="float:right;" href="//antnf.com">& Antnf</a>
+    Made by <a href="https://github.com/AnthonyFu117">@Anthony Fu</a>
+  </div>
+</div>
+  <script>
+    $('#history_button').popup({popup:'#history_popup',on:'click'});
     $('#demos .tabular.menu .item').tab({
       onFirstLoad:function(tabPath, parameterArray, historyEvent){
         var i = $('#demos iframe[parent-tab="'+tabPath+'"]');
@@ -85,14 +106,15 @@
           t.removeClass('loading');
         });
     }});
+    function show_demo(){
+      $('#demos .tabular.menu .item[data-tab="rich"]').click();
+      $('#demos').transition('fade in');
+      window.location.hash = '#demo_panel';
+    }
     $(function(){
-      if (!historys.init()) $('[data-type="history"]').hide();
-      setTimeout($('#demos .tabular.menu .item[data-tab="rich"]').click(),500);
+      if (!historys.init()) $('#history_button').hide();
     });
     quickjoin.create($('#quick_joins'),'join');
   </script>
-  <style>
-  body{background: url("{{ static_url('geometry2.png') }}");}
-  </style>
-</div>
+
 {% end %}

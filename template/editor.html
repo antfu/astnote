@@ -30,7 +30,6 @@
   <link rel="stylesheet" href="{{ static_url('firepad.css') }}" />
 
   <script src="{{ static_url('editor.js') }}"></script>
-  <script src="{{ static_url('quickjoin.js') }}"></script>
 {% end %}
 
 {% block content %}
@@ -67,7 +66,9 @@
          onclick="coder.warpmode.toggle()"></div>
   </div>
 </div>
-
+<div class="ui popup" id="history_popup">
+  <div class="ui link list" id="history_list"></div>
+</div>
 
 
 <div class="screen" id="screen">
@@ -77,13 +78,8 @@
       <a href="/" class="unit highlight" style="cursor:pointer;" id="back_button">
         <i class="left arrow icon"></i>
       </a>
-
-      <div class="unit highlight" id="historys">
-        <div class="ui dropdown" name="histoy_dropdown">
-          <div class="menu">
-          </div>
-        </div>
-        <i class="history icon" onclick="$('[name=histoy_dropdown]').dropdown('show');"></i>
+      <div class="unit highlight" id="history_button">
+        <i class="history icon"></i>
       </div>
       <div class="unit highlight" style="cursor:pointer;" onclick="modals.toggle('invite')">
         <i class="share alternate icon"></i>
@@ -216,13 +212,6 @@
       historys.renew = function(){};
     }
 
-    historys.display_historys = function()
-    {
-      var menu = $('[name=histoy_dropdown] .menu').empty();
-      $.each(historys.history,function(i,e){
-        menu.append('<a class="item" href="'+historys.url(e)+'">'+historys.format(e)+'</a>');
-      });
-      $('[name=histoy_dropdown]').dropdown();
-    }
+    $('#history_button').popup({popup:'#history_popup',on:'click'});
   </script>
 {% end %}

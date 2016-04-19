@@ -3,7 +3,8 @@ historys.remove_historys = function(){};
 historys.init = function()
 {
   historys.history = access_cookies('history') || [];
-  var modes = {r:'Rich Text',p:'Plain Text',m:'Markdown',c:'Code'};
+  var modes = {r:'Rich Text',m:'Markdown',c:'Code',t:'Text'};
+  var icons = {r:'italic',m:'columns',c:'code',t:'align justify'};
   historys.format = function(data)
   {
     function f(url){
@@ -13,6 +14,14 @@ historys.init = function()
       return data[1] || f(data[0]);
     else
       return f(data);
+  }
+  historys.mode = function(data)
+  {
+    return modes[historys.url(data).slice(1,2)];
+  }
+  historys.icon = function(data)
+  {
+    return icons[historys.url(data).slice(1,2)];
   }
   historys.url = function(data)
   {
@@ -27,6 +36,19 @@ historys.init = function()
         historys.history.splice(index, 1);
     access_cookies('history',historys.history);
     historys.display_historys();
+  }
+  historys.display_historys = function()
+  {
+    var history_list = $('#history_list').empty();
+    $.each(historys.history,function(i,e){
+      var item = '<div class="item">'
+      +'<i class="'+historys.icon(e)+' icon"></i>'
+      +'<div class="content">'
+      +'<a href="'+historys.url(e)+'">'+historys.format(e)+'</a>'
+      +'</div>'
+      +'</div>';
+      history_list.prepend(item);
+    });
   }
   historys.renew = function()
   {
@@ -337,4 +359,64 @@ modals.init_invite = function()
 modals.toggle = function(name)
 {
   $('.modal[name="'+name+'"]').modal('toggle');
+}
+
+var quickjoin = {};
+quickjoin.abort = function()
+{
+  if (quickjoin.current)
+    quickjoin.current.abort()
+  quickjoin.current = undefined;
+}
+quickjoin.join = function(key)
+{
+  var request = $.ajax({
+    type: 'GET',
+    url: '/quickjoin/'+key,
+    timeout: 30000
+  });
+  request.done(function(data)
+  {
+    if (data)
+      window.location.href = data;
+    console.log('GET',data);
+  });
+  quickjoin.current = request;
+  return request;
+}
+quickjoin.host = function(key)
+{
+  var request = $.ajax({
+    type: 'POST',
+    url: '/quickjoin/'+key+'?url='+encodeURI(window.location.href),
+    timeout: 30000
+  });
+  quickjoin.current = request;
+  return request;
+}
+quickjoin.reg = function($buttons,type)
+{
+  function down()
+  {
+    if (type == 'host')
+      var request = quickjoin.host($(this).attr('join-key'));
+    else
+      var request = quickjoin.join($(this).attr('join-key'));
+    setTimeout(function(){
+      request.abort();
+      $(this).mouseup();
+    },30000);
+  }
+  function up()
+  {
+    quickjoin.abort();
+  }
+  $buttons.mousedown(down).mouseup(up);
+  //$buttons.addEventListener('touchstart',down).addEventListener('touchend',up);
+}
+quickjoin.create = function($target,type)
+{
+  for (var i=0;i<5;i++)
+    $target.append('<div class="quick_join_button" join-key="'+i+'"></div>');
+  quickjoin.reg($target.find('.quick_join_button'),type);
 }
