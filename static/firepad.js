@@ -5963,14 +5963,14 @@ var FirepadUserList = (function() {
       myUserRef.child('name').set(name);
       nameInput.blur();
       self.displayName_ = name;
-      update_username(name);
+      userlist.update_username(name);
       stopEvent(e);
     });
 
     on(colorDiv, 'click', function(e){
       var new_color = ramdom_hsv();
       myUserRef.child('color').set(new_color);
-      update_usercolor(new_color);
+      userlist.update_usercolor(new_color);
       stopEvent(e);
     });
 

@@ -327,11 +327,10 @@ userlist.init = function(userId)
   if (!userColor || force_new_user)
   {
     userColor = ramdom_hsv();
-    update_usercolor(userColor);
+    userlist.update_usercolor(userColor);
   }
   userlist.instant = FirepadUserList.fromDiv(firepadRef.child('users'),
     document.getElementById('userlist'), userId, userName, userColor);
-
 }
 
 

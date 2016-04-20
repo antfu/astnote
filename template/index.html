@@ -98,6 +98,7 @@ body{background: url('{{ static_url('geometry2.png') }}');}
   </div>
 </div>
   <script>
+    $('#create_btn').dropown();
     $('#history_button').popup({popup:'#history_popup',on:'click'});
     $('#demos .tabular.menu .item').tab({
       onFirstLoad:function(tabPath, parameterArray, historyEvent){
