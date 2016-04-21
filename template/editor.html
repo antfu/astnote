@@ -33,7 +33,47 @@
 {% end %}
 
 {% block content %}
-
+<style>
+#chat_sidebar
+{
+  position: fixed;
+  right: 0;
+  top:0;
+  bottom:0;
+  width: 0;
+  height: 100%;
+  z-index: 100000;
+  transition: all 0.5s ease-in;
+}
+#chat_sidebar.pushed
+{
+  width: 25em;
+  box-shadow: 0 -4px -8px 0 rgba(0, 0, 0, 0.2);
+}
+#screen
+{
+  float: left;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: all 0.5s ease-in;
+}
+#screen.pushed
+{
+  width: calc(100% - 25em);
+}
+@media screen and (max-width: 600px) {
+  #screen.pushed
+  {
+    width: 100%;
+  }
+  #chat_sidebar.pushed
+  {
+    width: 100%;
+    opacity: 0.85;
+  }
+}
+</style>
 <div class="ui modal" name="invite">
   <i class="close icon"></i>
   <div class="content">
@@ -69,8 +109,6 @@
 <div class="ui popup" id="history_popup">
   <div class="ui link list" id="history_list"></div>
 </div>
-
-
 <div class="screen" id="screen">
   <div class="menu bar" id="menu_bar">
       <input type="text" class="title-input" id="editor_title_input"
@@ -86,6 +124,9 @@
       </div>
       <div class="unit highlight" style="cursor:pointer;" onclick="editor.save()">
         <i class="cloud download icon"></i>
+      </div>
+      <div class="unit highlight" style="cursor:pointer;" onclick="chat_sidebar()">
+        <i class="comments icon"></i>
       </div>
       {% if mode == 'c' %}
         <div class="ui top left pointing dropdown inline" id="syntax_dropdown">
@@ -154,9 +195,33 @@
   </div>
   <div class="userlistbar" id="userlist"></div>
 </div>
+<div id="chat_sidebar">
+  <i class="icon remove" style="position:absolute;right:0.5em;top:0.8em;color:rgba(255,255,255,0.7);font-size:1.2em;" onclick="chat_sidebar(false)"></i>
+  <iframe style="border:none;height:100%;width:100%;margin:0;padding:0;"></iframe>
+</div>
 {% end %}
 {% block scripts %}
   <script>
+    var chat_sidebar_state = false;
+    function chat_sidebar(val)
+    {
+      if (!val || val == 'toggle')
+        chat_sidebar_state = !chat_sidebar_state;
+      else
+        chat_sidebar_state = val;
+      if (chat_sidebar_state)
+      {
+        $('#chat_sidebar').addClass('pushed');
+        $('#screen').addClass('pushed');
+        $('#chat_icon').html('<i class="icon remove"></i>');
+      }
+      else
+      {
+        $('#chat_sidebar').removeClass('pushed');
+        $('#screen').removeClass('pushed');
+        $('#chat_icon').html('<i class="icon comments"></i>');
+      }
+    }
     function resize_pad(){
       var height = $(window).height() - ($('#menu_bar').height()||0) - ($('#userlist').height()||0) - 6;
       $('#editor').css('height',height).css('max-height',height);
@@ -181,8 +246,6 @@
             editor.save();
         }
     });
-  </script>
-  <script>
     window.addEventListener('resize',resize_pad, true);
     $(resize_pad);
 
@@ -213,5 +276,6 @@
     }
 
     $('#history_button').popup({popup:'#history_popup',on:'click'});
+    $('#chat_sidebar iframe').attr('src','//chat.antnf.com/?channel='+location.hostname+location.pathname);
   </script>
 {% end %}
