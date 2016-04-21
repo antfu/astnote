@@ -8,13 +8,32 @@
 
 {% block content %}
 <style>
-html,body{height:100%;}
+html{height:100%;}
 body{background: url('{{ static_url('geometry2.png') }}');}
 </style>
+<div style="position:relative;min-height:100%;">
 <div class="ui popup" id="history_popup">
   <div class="ui link list" id="history_list"></div>
 </div>
-<div style="min-height:calc(100% - 5em);">
+<div class="ui modal" name="create">
+  <i class="close icon"></i>
+  <div class="content">
+    <h3 class="ui header">
+      Create New Note
+    </h3>
+
+    <h3 class="ui header">
+      Note Type
+    </h3>
+    <div class="ui buttons">
+      <a class="orange ui button" href="/random/r">Rich Text</a>
+      <a class="yellow ui button" href="/random/t">Plain Text</a>
+      <a class="olive ui button" href="/random/c">Code</a>
+      <a class="blue ui button" href="/random/m">Markdown</a>
+    </div>
+  </div>
+</div>
+<div style="min-height:calc(100% - 5em);padding-bottom:5em;">
   <div style="padding:7em 0 4em 0;">
     <h1 class="ui center aligned header">
       <img src="{{ static_url('title_logo.png') }}" style="height:6em;width:auto;margin:0.25em;"/>
@@ -25,25 +44,33 @@ body{background: url('{{ static_url('geometry2.png') }}');}
       powered by <a href="https://firepad.io/" target="_blank">Firepad</a>, but more than Firepad</span>
       <br><br>
       <div class="ui compact teal button" onclick="$('#quick_join_panel').transition('fade down')" style="background:#b8bb26">Join</div>
-      <div class="ui compact teal dropdown button" id="create_btn" style="background:#fabd2f">
-        Create
-        <div class="menu">
-          <a class="item" href="/random/r"><div class="ui orange empty circular label"></div>Rich Text</a>
-          <a class="item" href="/random/t"><div class="ui yellow empty circular label"></div>Plain Text</a>
-          <a class="item" href="/random/c"><div class="ui olive empty circular label"></div>Code</a>
-          <a class="item" href="/random/m"><div class="ui blue empty circular label"></div>Markdown</a>
-        </div>
-      </div>
+      <div class="ui compact teal button" onclick="$('#create_panel').transition('fade down')" style="background:#fabd2f">Create</div>
       <div id="history_button" style="opacity:0.5;display:block;padding:1em;" data-position="bottom center"><i class="icon undo"></i>Historys</div>
       </div>
     </h1>
     <h3 class="ui center aligned header transition hidden" style="margin-top:2em;" id="quick_join_panel">
+      Quick Join
       <div class="sub header">
       Press and hold the same button with your friend at same time.
-      <br><br>
-      <div id="quick_joins"></div>
       </div>
+      <br>
+      <div id="quick_joins"></div>
     </h3>
+    <div class="ui center aligned header transition hidden" style="margin-top:2em;" id="create_panel">
+      <h3 class="ui header" >
+        Create New Note
+        <div class="sub header">
+        Select a type to create note
+        </div>
+        <br>
+        <div class="ui small buttons">
+          <a class="orange ui button" href="/random/r">Rich Text</a>
+          <a class="yellow ui button" href="/random/t">Plain Text</a>
+          <a class="olive ui button" href="/random/c">Code</a>
+          <a class="blue ui button" href="/random/m">Markdown</a>
+        </div>
+      </h3>
+    </div>
   </div>
   <div style="padding:5em 1em 5em 1em;background:rgba(255,255,255,0.6);">
     <div class="ui three column center aligned relaxed stackable grid" style="font-size:0.9em;max-width:70em;margin:0 auto;">
@@ -96,28 +123,28 @@ body{background: url('{{ static_url('geometry2.png') }}');}
   <a style="float:right;" href="//antnf.com">& Antnf</a>
   Made by <a href="https://github.com/AnthonyFu117">@Anthony Fu</a>
 </div>
-  <script>
-    $('#create_btn').dropdown();
-    $('#history_button').popup({popup:'#history_popup',on:'click'});
-    $('#demos .tabular.menu .item').tab({
-      onFirstLoad:function(tabPath, parameterArray, historyEvent){
-        var i = $('#demos iframe[parent-tab="'+tabPath+'"]');
-        var t = $('#demos .tab.segment[data-tab="'+tabPath+'"]');
-        t.addClass('loading');
-        i.attr('src',i.attr('raw-src'));
-        i.on('load',function(){
-          t.removeClass('loading');
-        });
-    }});
-    function show_demo(){
-      $('#demos .tabular.menu .item[data-tab="rich"]').click();
-      $('#demos').transition('fade in');
-      window.location.hash = '#demo_panel';
-    }
-    $(function(){
-      if (!historys.init()) $('#history_button').hide();
-    });
-    quickjoin.create($('#quick_joins'),'join');
-  </script>
-
+</div>
+<script>
+  $('#create_btn').dropdown();
+  $('#history_button').popup({popup:'#history_popup',on:'click'});
+  $('#demos .tabular.menu .item').tab({
+    onFirstLoad:function(tabPath, parameterArray, historyEvent){
+      var i = $('#demos iframe[parent-tab="'+tabPath+'"]');
+      var t = $('#demos .tab.segment[data-tab="'+tabPath+'"]');
+      t.addClass('loading');
+      i.attr('src',i.attr('raw-src'));
+      i.on('load',function(){
+        t.removeClass('loading');
+      });
+  }});
+  function show_demo(){
+    $('#demos .tabular.menu .item[data-tab="rich"]').click();
+    $('#demos').transition('fade in');
+    window.location.hash = '#demo_panel';
+  }
+  $(function(){
+    if (!historys.init()) $('#history_button').hide();
+  });
+  quickjoin.create($('#quick_joins'),'join');
+</script>
 {% end %}
