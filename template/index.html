@@ -14,7 +14,7 @@ body{background: url('{{ static_url('geometry2.png') }}');}
 <div class="ui popup" id="history_popup">
   <div class="ui link list" id="history_list"></div>
 </div>
-<div>
+<div style="min-height:calc(100% - 5em);">
   <div style="padding:7em 0 4em 0;">
     <h1 class="ui center aligned header">
       <img src="{{ static_url('title_logo.png') }}" style="height:6em;width:auto;margin:0.25em;"/>
@@ -91,14 +91,13 @@ body{background: url('{{ static_url('geometry2.png') }}');}
       </div>
     </div>
   </div>
-
-  <div class="ui center aligned basic segment" style="padding:2em 5em;background:rgba(125,125,125,0.06);">
-    <a style="float:right;" href="//antnf.com">& Antnf</a>
-    Made by <a href="https://github.com/AnthonyFu117">@Anthony Fu</a>
-  </div>
+</div>
+<div class="ui center aligned basic segment" style="margin:0;padding:2em 5em;background:rgba(125,125,125,0.06);line-height:1em;height:5em;position:absolute;bottom:0;left:0;right:0;">
+  <a style="float:right;" href="//antnf.com">& Antnf</a>
+  Made by <a href="https://github.com/AnthonyFu117">@Anthony Fu</a>
 </div>
   <script>
-    $('#create_btn').dropown();
+    $('#create_btn').dropdown();
     $('#history_button').popup({popup:'#history_popup',on:'click'});
     $('#demos .tabular.menu .item').tab({
       onFirstLoad:function(tabPath, parameterArray, historyEvent){
