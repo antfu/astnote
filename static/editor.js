@@ -57,7 +57,7 @@ historys.init = function()
     if (historys.history.length > 7) historys.history.shift();
     $.each(historys.history,function(i,e)
     {
-      if (e == room_url || e[0] == room_url)
+      if (e && (e == room_url || e[0] == room_url))
         historys.history.splice(i, 1);
     });
     historys.history.push([room_url,editor.title]);
@@ -108,13 +108,11 @@ markdown.init = function(editor){
     {
       markdown._scroll_bind(a,b);
       markdown._scroll_bind(b,a);
-      //$('#md_sync_btn').html('Scrolling sync on');
     }
     else
     {
       markdown._scroll_unbind(a);
       markdown._scroll_unbind(b);
-      //$('#md_sync_btn').html('Scrolling sync off');
     }
   }
   markdown._scroll_bind = function (source,target)
