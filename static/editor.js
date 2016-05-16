@@ -91,7 +91,7 @@ markdown.init = function(editor){
   }
   markdown.save = function(filename)
   {
-    filename = filename || get_file_name('.html');
+    filename = filename || editor.get_file_name('html');
     var html_data = '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Astnote Markdown Save</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/github-markdown-css/2.2.1/github-markdown.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/solarized-light.min.css"/></head><body><div class="markdown-body" style="margin:2em;">'
       + marked(editor.firepad.getText()) + '</div></body></html>';
     download(filename,html_data);
@@ -299,9 +299,9 @@ editor.bind_meta = function(key,on_value)
 {
   editor.meta_ref.child(key).on('value',on_value);
 }
-editor.get_file_name = function()
+editor.get_file_name = function(ext)
 {
-  return (editor.title||'Astnote')+'-'+(new Date()).toISOString().replace(/:|-/g,'').replace(/T/g,'-').slice(0,15)+'.'+editor.ext();
+  return (editor.title||'Astnote')+'-'+(new Date()).toISOString().replace(/:|-/g,'').replace(/T/g,'-').slice(0,15)+'.'+(ext||editor.ext());
 }
 
 var userlist = {};
